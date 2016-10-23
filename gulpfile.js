@@ -41,9 +41,14 @@ gulp.task('build:index', function(){
 gulp.task('build:app', function(){
     
     var stylesheet = gulp.src('client/styles.css')
-	.pipe(gulp.dest('dist/app'))
+	   .pipe(gulp.dest('dist/app'))
 	
-	
+	var node_modules = gulp.src('node_modules/@angular/**/*.js')
+	   .pipe(gulp.dest('dist/node_modules/@angular'))
+	   
+    node_modules = gulp.src('node_modules/rxjs/**/*.js')
+        .pipe(gulp.dest('dist/node_modules/rxjs'))
+        
     var tsProject = ts.createProject('client/tsconfig.json');
     var tsResult = gulp.src('client/**/*.ts')
 		.pipe(sourcemaps.init())
