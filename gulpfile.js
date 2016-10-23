@@ -32,7 +32,7 @@ gulp.task('build:index', function(){
     var copyIndex = gulp.src('client/index.html')
         .pipe(gulp.dest('dist'))
     
-    var copyIndexDependencies = gulp.src(['client/systemjs.config.js','client/styles.css'])
+    var copyIndexDependencies = gulp.src(['client/systemjs.config.js'])
         .pipe(gulp.dest('dist/libs'))
     
     return [copyJsNPMDependencies, copyIndex,copyIndexDependencies];
@@ -40,9 +40,9 @@ gulp.task('build:index', function(){
 
 gulp.task('build:app', function(){
     
-    /*var angular_modules = gulp.src('node_modules/**')
-	.pipe(gulp.dest('dist/node_modules'))
-	*/
+    var stylesheet = gulp.src('client/styles.css')
+	.pipe(gulp.dest('dist/app'))
+	
 	
     var tsProject = ts.createProject('client/tsconfig.json');
     var tsResult = gulp.src('client/**/*.ts')
