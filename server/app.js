@@ -19,6 +19,7 @@ app.use(cookieParser());
 
 app.use('/app', express.static(path.resolve(__dirname, 'app')));
 app.use('/libs', express.static(path.resolve(__dirname, 'libs')));
+app.use('/node_modules', express.static(path.resolve(__dirname, '../node_modules')));
 
 var renderIndex = (req,res) => {
     res.sendFile(path.resolve(__dirname, 'index.html'));

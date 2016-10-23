@@ -39,6 +39,11 @@ gulp.task('build:index', function(){
 });
 
 gulp.task('build:app', function(){
+    
+    /*var angular_modules = gulp.src('node_modules/**')
+	.pipe(gulp.dest('dist/node_modules'))
+	*/
+	
     var tsProject = ts.createProject('client/tsconfig.json');
     var tsResult = gulp.src('client/**/*.ts')
 		.pipe(sourcemaps.init())
@@ -46,9 +51,14 @@ gulp.task('build:app', function(){
 	return tsResult.js
         .pipe(sourcemaps.write()) 
 		.pipe(gulp.dest('dist'))
+
 });
 
 gulp.task('build:server', function(){
     var serverCode = gulp.src('server/**/*')
         .pipe(gulp.dest('dist'))
 })
+
+gulp.task('build', function(callback){
+    runSequence('clean', 'build:server', 'build:index', 'build:app', callback);
+});
