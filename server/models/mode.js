@@ -1,6 +1,11 @@
 'use strict';
 module.exports = function(sequelize, DataTypes) {
   var mode = sequelize.define('mode', {
+    id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+    },
     mode_name: DataTypes.STRING
   }, {
     classMethods: {

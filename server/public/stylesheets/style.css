@@ -6,3 +6,36 @@ body {
 a {
   color: #00B7FF;
 }
+
+#mainHeader {background:mistyrose;}
+#pcHeader {background:ivory;}
+#pcTableBlock {background:honeydew;}
+#runMode {background:lightblue;}
+#stirrerRow {background:linen;}
+#stirrerRowSpace {background:linen;}
+#stirrerSliderRow {background:linen;font-size:15px;font-weight:bold;}
+#runMode {font-size:20px;}
+
+.table th, .table td { 
+border-top: none !important; 
+border-right: 1px solid #ddd;
+border-left: 1px solid #ddd;
+}
+
+.btn-primary {
+background:#0099cc;
+color: #ffffff;
+}
+
+.btn-lg.round {
+border-radius:24px;
+}
+
+.green {
+background-color:green;
+color:white;
+}
+.red {
+background-color:red;
+color:white;
+}

@@ -12,8 +12,9 @@ block content
                 table.table
                     thead
                         tr
+                        th
                         each pump in pumps
-                                th = pump.pump_name
+                            th #{pump.pump_name}
                     tr
                         td Diam(mm)
                         each pump in pumps
@@ -26,7 +27,7 @@ block content
                                 div.col-xs-3.text-center
                                     div.col-xs-3.text-center
                                 div.col-xs-6.text-center
-                                    button(id = pump.pump_name + 'Increase', type=button, class=btn btn-primary btn-lg.round btn-block)
+                                    button(id = pump.pump_name + 'Increase', type=button, class=btn btn-primary btn-lg.round btn-block) +
                                 div.col-xs-3.text-center
                     tr
                         td Rate (ul/L)
@@ -40,20 +41,26 @@ block content
                                 div.col-xs-3.text-center
                                     div.col-xs-3.text-center
                                 div.col-xs-6.text-center
-                                    button(id = pump.pump_name + 'Decrease', type=button, class=btn btn-primary btn-lg.round btn-block)
+                                    button(id = pump.pump_name + 'Decrease', type=button, class=btn btn-primary btn-lg.round btn-block) -
                                 div.col-xs-3.text-center
                     tr
                         td
                         each pump in pumps
                             td
                                 input.BSswitch(id=pump.pump_name + 'Switch', type='checkbox',data-off-text='Stopped',data-on-text='Running',data-on-color='success',data-off-color='danger',checked)
+                    tr
+                        td
+                        each pump in pumps
+                            td
+                                button(type="button",name= pump.pump_name).pumpDelete Delete
         div.col-lg-3#runMode
             h3 Run mode:
             form#runModeGroup
             each mode in modes
                 div.radio
                     label
-                        input(type='radio',name='runMode' value=mode.mode_name,style='height:20px; width:20px; vertical-align: middle;')mode.mode_name
+                        input(type='radio',name='runMode' value=mode.mode_name,style='height:20px; width:20px; vertical-align: middle;')
+                        |#{mode.mode_name}
             div.col-xs-12.text-center
                     div.col-xs-1.text-center
                     div.col-xs-10.text-center
@@ -72,6 +79,134 @@ block content
         div.col-lg-12#stirrrRowSpace
             h4 &nbsp
     
-          
-                    
-                            
+    div.col-lg-3#mainHeader
+        h3 Add Pump
+        div.col-lg-12#pcHeader
+            form#pumpAdditionForm
+                span Pump Name: 
+                    input(type='text',name='pumpName')
+                span Driver Code: 
+                    input(type='text',name='driverCode')
+                div.col-xs-10.text-center
+                    input(type='submit', value='Add New Pump')
+    script.   
+     $('.BSswitch').bootstrapSwitch('state', true);
+      $('#pauseResume').click(function () {
+         var pList = ["beadPump", "rtPump","cellPump","oilPump"];
+         var pID = ["BP", "RP","CP","OP"];     // pump mapping
+         $('.BSswitch ').bootstrapSwitch('toggleDisabled');
+    
+         if ($(this).text()=='Pause All') {
+            // Pause All:
+            $(this).text('Resume All');
+            $(this).removeClass('red');     
+            $(this).addClass('green');
+            // Send STP to all pumps:
+            for (i=0; i<pList.length; i++) {
+               var thing = document.getElementById(pList[i]);
+               if ($(thing).bootstrapSwitch('state')) {
+               // Send RUN to pumps that should be running:
+               MsgSend(pID[i],'STP');
+               }
+            }
+    
+         } else {
+            // Resume All:
+            $(this).text('Pause All');
+            $(this).removeClass('green');     
+            $(this).addClass('red');     
+            // Send RUN to all pumps in "Running" mode:
+            for (i=0; i<pList.length; i++) {
+               var thing = document.getElementById(pList[i]);
+               if ($(thing).bootstrapSwitch('state')) {
+               // Send RUN to pumps that should be running:
+               MsgSend(pID[i],'RUN');
+               }
+            }
+         }
+       });
+       <!-- pump on/off toggle switch handler -->
+        $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
+          <!--   toggle switch action code goes here -->
+          if ($(this).bootstrapSwitch('state')) {
+             MsgSend($(this).val(),'RUN');
+          } else {
+             MsgSend($(this).val(),'STP');
+          }
+        
+        });
+        
+        $('#pumpAdditionForm').submit(function(event){
+            event.preventDefault();
+            var driverCode = $(this).find('input[name=driverCode]').val()
+            var pumpName = $(this).find('input[name=pumpName]').val()
+            $.post("pumps/add",{pump_name: pumpName, driver_code: driverCode})
+            location.reload();   
+        })
+        
+        $('.pumpDelete').on('click',function(){
+            var pumpName = this.name;
+            $.post("pumps/delete",{pump_name: pumpName});
+            location.reload();
+        })
+        
+        <!-- Inc/Dec button handler -->
+        $('.btn').on('click', function () {
+          MsgSend(this.id,"");
+        });
+        <!-- form-control handler -->
+        $('.form-control').on('keypress', function (e) {
+          if (e.which == 13) {   <!-- Enter key -->
+             switch ($(this)[0].id) {
+                case "beadSyringe":
+                   MsgSend("BS",$(this).val());
+                   break;
+                case "rtSyringe":
+                   MsgSend("RS",$(this).val());
+                   break;
+                case "cellSyringe":
+                   MsgSend("CS",$(this).val());
+                   break;
+                case "oilSyringe":
+                   MsgSend("OS",$(this).val());
+                   break;
+                case "beadRate":
+                   MsgSend("BR",$(this).val());
+                   break;
+                case "rtRate":
+                   MsgSend("RR",$(this).val());
+                   break;
+                case "cellRate":
+                   MsgSend("CR",$(this).val());
+                   break;
+                case "oilRate":
+                   MsgSend("OR",$(this).val());
+              }
+          }
+        });
+        
+        //run mode radio buttons handlers 
+        $('#runModeGroup input').on('change', function() {
+        var $btnSource = $('input[name="runMode"]:checked', '#runModeGroup').val();
+        switch($btnSource) {
+           case "primeBeads":
+              MsgSend("MB","");
+              break;
+           case "primeOther":
+              MsgSend("MO","");
+              break;
+           case "packBeads":
+              MsgSend("MP","");
+              break;
+           case "run":
+              MsgSend("MR","");
+              break;
+           default:
+              MsgSend("MM","");
+        }
+        });
+        <!--- Stirrer slider -->
+        $("#stirrer").slider();
+        $("#stirrer").on("slide", function(slideEvt) {
+        $("#stirrerSliderVal").text(slideEvt.value);
+        });
