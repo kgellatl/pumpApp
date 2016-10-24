@@ -36,15 +36,17 @@
     "zone.js": "^0.6.25"
   },
   "devDependencies": {
+    "browser-sync": "^2.17.5",
     "concurrently": "^3.0.0",
-    "lite-server": "^2.2.2",
-    "typescript": "^2.0.3",
-    "typings":"^1.4.0",
     "del": "2.2.0",
     "gulp": "3.9.0",
     "gulp-concat": "2.6.0",
+    "gulp-nodemon": "^2.2.1",
     "gulp-sourcemaps": "1.6.0",
     "gulp-typescript": "2.10.0",
-    "run-sequence": "1.1.5"
+    "lite-server": "^2.2.2",
+    "run-sequence": "1.1.5",
+    "typescript": "^2.0.3",
+    "typings": "^1.4.0"
   }
 }
