@@ -1,5 +1,77 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div.row#mainHeader
+      div.col-lg-12 
+        h3 inDrops Control Panel
+      div.col-lg-12#pcHeader 
+        h4 PumpControls
+        div.row
+        form
+            div.col-lg-8#pcTableBlock
+                table.table
+                    thead
+                        tr
+                        each pump in pumps
+                                th = pump.pump_name
+                    tr
+                        td Diam(mm)
+                        each pump in pumps
+                            td
+                                input.form-control(id = pump.pump_name + 'Syringe')
+                    tr
+                        td 
+                        each pump in pumps
+                            td
+                                div.col-xs-3.text-center
+                                    div.col-xs-3.text-center
+                                div.col-xs-6.text-center
+                                    button(id = pump.pump_name + 'Increase', type=button, class=btn btn-primary btn-lg.round btn-block)
+                                div.col-xs-3.text-center
+                    tr
+                        td Rate (ul/L)
+                        each pump in pumps
+                            td
+                                input.form-control(id= pump.pump_name + 'Rate', type='text', style='font-size:18px;font-weight:bold')
+                    tr
+                        td 
+                        each pump in pumps
+                            td
+                                div.col-xs-3.text-center
+                                    div.col-xs-3.text-center
+                                div.col-xs-6.text-center
+                                    button(id = pump.pump_name + 'Decrease', type=button, class=btn btn-primary btn-lg.round btn-block)
+                                div.col-xs-3.text-center
+                    tr
+                        td
+                        each pump in pumps
+                            td
+                                input.BSswitch(id=pump.pump_name + 'Switch', type='checkbox',data-off-text='Stopped',data-on-text='Running',data-on-color='success',data-off-color='danger',checked)
+        div.col-lg-3#runMode
+            h3 Run mode:
+            form#runModeGroup
+            each mode in modes
+                div.radio
+                    label
+                        input(type='radio',name='runMode' value=mode.mode_name,style='height:20px; width:20px; vertical-align: middle;')mode.mode_name
+            div.col-xs-12.text-center
+                    div.col-xs-1.text-center
+                    div.col-xs-10.text-center
+                        button(type='button',id='pauseResume',style='display:block;width:100%;').red Pause All
+                    div.col-xs-1.text-center
+            div.col-xs-1.text-center
+                h4 &nbsp
+        div.col-lg-12#stirrerRowSpace
+            h4 &nbspStirrer motor control
+        div.col-lg-12#stirrerSliderRow
+            div.col-xs-1
+            div.col-xs-8
+                input(id='stirrer',type='text',data-slider-min='0',data-slider-max='120',data-slider-step='1',data-slider-value='3')
+                span#stirrerCurrentSliderValLabel &nbspMotor speed (rpm):
+                    span#stirrerSliderVal 30
+        div.col-lg-12#stirrrRowSpace
+            h4 &nbsp
+    
+          
+                    
+                            

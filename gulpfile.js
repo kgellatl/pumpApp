@@ -6,7 +6,7 @@ var nodemon = require('gulp-nodemon')
 gulp.task('nodemon', function (cb) {
 	var started = false;
 	return nodemon({
-	    exec: 'node --inspect=5000 --debug-brk ./server/bin/www',
+	    exec: 'node --inspect=5000 ./server/bin/www',
 		script: './server/bin/www',
 		ext: 'js jade',
 		env: {
