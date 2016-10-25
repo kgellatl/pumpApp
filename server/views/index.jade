@@ -74,26 +74,27 @@ block content
         h4.panel-heading Add Pump
         div.col-lg-12#pcHeader.container.panel
             form#pumpAdditionForm
-                div.col-xs-10.text-center
-                    span Pump Name: 
-                        input(type='text',name='pumpName')
-                div.col-xs-10.text-center
-                    span Driver Code: 
-                        input(type='text',name='driverCode')
+                div.input-group
+                    span.input-group-addon Pump Name 
+                    input(type='text',name='pumpName').form-control
+                div.input-group
+                    span.input-group-addon Driver Code 
+                    input(type='text',name='driverCode').form-control
                 div.col-xs-10.text-center
                     input(type='submit', value='Add New Pump')
     td
     div.col-lg-8#mainHeader.panel
         h4 Add Run Mode
         div.col-lg-12#pcHeader.panel
-            form#runModeAdditionForm
-                span Run Mode Name:  
-                input(type='text' name='runModeName')
+            form#runModeAdditionForm.form-group
+                div.input-group
+                    span.input-group-addon Run Mode Name:  
+                    input(type='text' name='runModeName').form-control
                 span
                 span
                 h4 Pumps:
                 each pump in pumps
-                    div.col-xs-10.text-center
+                    div.input-group
                         span #{pump.pump_name} 
                         input(type='checkbox',name= pump.pump_name)
                         span Rate(ul/L)
