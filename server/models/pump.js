@@ -9,7 +9,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     driver_code: DataTypes.STRING,
     current_rate: DataTypes.FLOAT,
-    syringe_diam: DataTypes.FLOAT
+    syringe_diam: DataTypes.FLOAT,
+    default_rate: { type: DataTypes.FLOAT,defaultValue:50 }
   }, {
     classMethods: {
       associate: function(models) {

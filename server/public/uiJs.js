@@ -1,8 +1,6 @@
       $('.BSswitch').bootstrapSwitch('state', true);
       
       $('#pauseResume').click(function () {
-         var pList = ["beadPump", "rtPump","cellPump","oilPump"];
-         var pID = ["BP", "RP","CP","OP"];     // pump mapping
          $('.BSswitch ').bootstrapSwitch('toggleDisabled');
     
          if ($(this).text()=='Pause All') {
@@ -10,37 +8,34 @@
             $(this).text('Resume All');
             $(this).removeClass('red');     
             $(this).addClass('green');
-            // Send STP to all pumps:
-            for (i=0; i<pList.length; i++) {
-               var thing = document.getElementById(pList[i]);
-               if ($(thing).bootstrapSwitch('state')) {
-               // Send RUN to pumps that should be running:
-               MsgSend(pID[i],'STP');
-               }
+            $.post('pumps/stopAll');
             }
     
-         } else {
+            else {
             // Resume All:
             $(this).text('Pause All');
             $(this).removeClass('green');     
             $(this).addClass('red');     
-            // Send RUN to all pumps in "Running" mode:
-            for (i=0; i<pList.length; i++) {
-               var thing = document.getElementById(pList[i]);
-               if ($(thing).bootstrapSwitch('state')) {
-               // Send RUN to pumps that should be running:
-               MsgSend(pID[i],'RUN');
-               }
-            }
+            $.post('pumps/runAll');
          }
        });
+       
+       $('.updateVol').click(function(){
+           var pumpName = this.name;
+           var that = this;
+           $.get("pumps/getAccVol/" + pumpName,function(data){
+               $(that).prev().val(data.accVol)
+           })
+       })
+       
        <!-- pump on/off toggle switch handler -->
         $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
           <!--   toggle switch action code goes here -->
+          var pumpName = this.name;
           if ($(this).bootstrapSwitch('state')) {
-             MsgSend($(this).val(),'RUN');
+            $.post('pumps/run/' + pumpName);
           } else {
-             MsgSend($(this).val(),'STP');
+            $.post('pumps/stop/' + pumpName);
           }
         
         });
@@ -81,61 +76,21 @@
             location.reload();
         })
         
-        <!-- Inc/Dec button handler -->
-        $('.btn').on('click', function () {
-          MsgSend(this.id,"");
-        });
         <!-- form-control handler -->
         $('.form-control').on('keypress', function (e) {
           if (e.which == 13) {   <!-- Enter key -->
-             switch ($(this)[0].id) {
-                case "beadSyringe":
-                   MsgSend("BS",$(this).val());
-                   break;
-                case "rtSyringe":
-                   MsgSend("RS",$(this).val());
-                   break;
-                case "cellSyringe":
-                   MsgSend("CS",$(this).val());
-                   break;
-                case "oilSyringe":
-                   MsgSend("OS",$(this).val());
-                   break;
-                case "beadRate":
-                   MsgSend("BR",$(this).val());
-                   break;
-                case "rtRate":
-                   MsgSend("RR",$(this).val());
-                   break;
-                case "cellRate":
-                   MsgSend("CR",$(this).val());
-                   break;
-                case "oilRate":
-                   MsgSend("OR",$(this).val());
-              }
+             var pumpName = this.name;
+             var diam = $(this).val();
+             $.post()
           }
         });
         
         //run mode radio buttons handlers 
         $('#runModeGroup input').on('change', function() {
-        var $btnSource = $('input[name="runMode"]:checked', '#runModeGroup').val();
-        switch($btnSource) {
-           case "primeBeads":
-              MsgSend("MB","");
-              break;
-           case "primeOther":
-              MsgSend("MO","");
-              break;
-           case "packBeads":
-              MsgSend("MP","");
-              break;
-           case "run":
-              MsgSend("MR","");
-              break;
-           default:
-              MsgSend("MM","");
-        }
+        var groupName = this.value;
+        $.post('pumps/run/' + groupName);
         });
+        
         <!--- Stirrer slider -->
         $("#stirrer").slider();
         $("#stirrer").on("slide", function(slideEvt) {

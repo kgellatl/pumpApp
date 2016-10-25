@@ -19,35 +19,23 @@ block content
                         td Diam(mm)
                         each pump in pumps
                             td
-                                input.form-control(id = pump.pump_name + 'Syringe')
-                    tr
-                        td 
-                        each pump in pumps
-                            td
-                                div.col-xs-3.text-center
-                                    div.col-xs-3.text-center
-                                div.col-xs-6.text-center
-                                    button(id = pump.pump_name + 'Increase', type=button, class=btn btn-primary btn-lg.round btn-block) +
-                                div.col-xs-3.text-center
+                                input.form-control(name = pump.pump_name + 'Syringe')
                     tr
                         td Rate (ul/L)
                         each pump in pumps
                             td
-                                input.form-control(id= pump.pump_name + 'Rate', type='text', style='font-size:18px;font-weight:bold')
+                                input.form-control(name= pump.pump_name + 'Rate', type='text', style='font-size:18px;font-weight:bold')
                     tr
-                        td 
+                        td Acc Vol
                         each pump in pumps
                             td
-                                div.col-xs-3.text-center
-                                    div.col-xs-3.text-center
-                                div.col-xs-6.text-center
-                                    button(id = pump.pump_name + 'Decrease', type=button, class=btn btn-primary btn-lg.round btn-block) -
-                                div.col-xs-3.text-center
+                                input(name=pump.pump_name).form-control
+                                button(type="button" name = pump.pump_name).updateVol Update Volume
                     tr
                         td
                         each pump in pumps
                             td
-                                input.BSswitch(id=pump.pump_name + 'Switch', type='checkbox',data-off-text='Stopped',data-on-text='Running',data-on-color='success',data-off-color='danger',checked)
+                                input.BSswitch(name=pump.pump_name, type='checkbox',data-off-text='Stopped',data-on-text='Running',data-on-color='success',data-off-color='danger',checked)
                     tr
                         td
                         each pump in pumps
