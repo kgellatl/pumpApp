@@ -58,9 +58,14 @@ block content
             form#runModeGroup
             each mode in modes
                 div.radio
-                    label
+                    - var getToolTip = function(modeName){
+                    -   return pumpModeRates.filter(function(pumpModeRate){return pumpModeRate.modeModeName==modeName}).reduce((prev,curr) => prev + " " + curr.pumpPumpName + ": " + curr.rate , "")
+                    - }
+                    label(title="#{getToolTip(mode.mode_name)}")
                         input(type='radio',name='runMode' value=mode.mode_name,style='height:20px; width:20px; vertical-align: middle;')
                         |#{mode.mode_name}
+                    label
+                        button(type="button" name=mode.mode_name).modeDelete Delete
             div.col-xs-12.text-center
                     div.col-xs-1.text-center
                     div.col-xs-10.text-center
@@ -107,141 +112,5 @@ block content
                         span Rate(ul/L)
                         input(type='text', name= pump.pump_name + 'Rate')
                 input(type='submit',value='Add new run mode')
-    script.   
-     $('.BSswitch').bootstrapSwitch('state', true);
-      $('#pauseResume').click(function () {
-         var pList = ["beadPump", "rtPump","cellPump","oilPump"];
-         var pID = ["BP", "RP","CP","OP"];     // pump mapping
-         $('.BSswitch ').bootstrapSwitch('toggleDisabled');
-    
-         if ($(this).text()=='Pause All') {
-            // Pause All:
-            $(this).text('Resume All');
-            $(this).removeClass('red');     
-            $(this).addClass('green');
-            // Send STP to all pumps:
-            for (i=0; i<pList.length; i++) {
-               var thing = document.getElementById(pList[i]);
-               if ($(thing).bootstrapSwitch('state')) {
-               // Send RUN to pumps that should be running:
-               MsgSend(pID[i],'STP');
-               }
-            }
-    
-         } else {
-            // Resume All:
-            $(this).text('Pause All');
-            $(this).removeClass('green');     
-            $(this).addClass('red');     
-            // Send RUN to all pumps in "Running" mode:
-            for (i=0; i<pList.length; i++) {
-               var thing = document.getElementById(pList[i]);
-               if ($(thing).bootstrapSwitch('state')) {
-               // Send RUN to pumps that should be running:
-               MsgSend(pID[i],'RUN');
-               }
-            }
-         }
-       });
-       <!-- pump on/off toggle switch handler -->
-        $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
-          <!--   toggle switch action code goes here -->
-          if ($(this).bootstrapSwitch('state')) {
-             MsgSend($(this).val(),'RUN');
-          } else {
-             MsgSend($(this).val(),'STP');
-          }
-        
-        });
-        
-        $('#pumpAdditionForm').submit(function(event){
-            event.preventDefault();
-            var driverCode = $(this).find('input[name=driverCode]').val()
-            var pumpName = $(this).find('input[name=pumpName]').val()
-            $.post("pumps/add",{pump_name: pumpName, driver_code: driverCode})
-            location.reload();   
-        })
-        
-        $('.pumpDelete').on('click',function(){
-            var pumpName = this.name;
-            $.post("pumps/delete",{pump_name: pumpName});
-            location.reload();
-        })
-        
-        $('#runModeAdditionForm').submit(function(event){
-            event.preventDefault();
-            var runModeName = $(this).find('input[name="runModeName"]').val();
-            var checked = $(this).find('input:checked').map(function(){
-                return this.name
-                }).get();
-            var requestJson = {};
-            for(var i =0; i<checked.length;i++){
-               var pumpName = checked[i];
-               var rate = $('#runModeAdditionForm').find('input[name="' + pumpName + 'Rate"]').val();
-               requestJson[pumpName]=rate
-            }
-            requestJson["mode_name"]=runModeName;
-            $.post("modes/add",requestJson);
-            location.reload();
-        })
-        
-        <!-- Inc/Dec button handler -->
-        $('.btn').on('click', function () {
-          MsgSend(this.id,"");
-        });
-        <!-- form-control handler -->
-        $('.form-control').on('keypress', function (e) {
-          if (e.which == 13) {   <!-- Enter key -->
-             switch ($(this)[0].id) {
-                case "beadSyringe":
-                   MsgSend("BS",$(this).val());
-                   break;
-                case "rtSyringe":
-                   MsgSend("RS",$(this).val());
-                   break;
-                case "cellSyringe":
-                   MsgSend("CS",$(this).val());
-                   break;
-                case "oilSyringe":
-                   MsgSend("OS",$(this).val());
-                   break;
-                case "beadRate":
-                   MsgSend("BR",$(this).val());
-                   break;
-                case "rtRate":
-                   MsgSend("RR",$(this).val());
-                   break;
-                case "cellRate":
-                   MsgSend("CR",$(this).val());
-                   break;
-                case "oilRate":
-                   MsgSend("OR",$(this).val());
-              }
-          }
-        });
-        
-        //run mode radio buttons handlers 
-        $('#runModeGroup input').on('change', function() {
-        var $btnSource = $('input[name="runMode"]:checked', '#runModeGroup').val();
-        switch($btnSource) {
-           case "primeBeads":
-              MsgSend("MB","");
-              break;
-           case "primeOther":
-              MsgSend("MO","");
-              break;
-           case "packBeads":
-              MsgSend("MP","");
-              break;
-           case "run":
-              MsgSend("MR","");
-              break;
-           default:
-              MsgSend("MM","");
-        }
-        });
-        <!--- Stirrer slider -->
-        $("#stirrer").slider();
-        $("#stirrer").on("slide", function(slideEvt) {
-        $("#stirrerSliderVal").text(slideEvt.value);
-        });
+    script(src="/uiJs.js")  
+     

@@ -2,6 +2,7 @@ var express = require('express');
 var models  = require('../models');
 
 var router = express.Router();
+
 var pumpTable = models.pump;
 var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
@@ -9,9 +10,11 @@ var pumpModeRateTable = models.pump_mode_rate;
 /* GET home page. */
 router.get('/', function(req, res, next) {
   pumpTable.findAll().then(function(pumps){
-    modeTable.findAll().then(function(modes){
-    res.render('index', { pumps: pumps, modes: modes });
-    })
+        modeTable.findAll().then(function(modes){
+            pumpModeRateTable.findAll().then(function(pumpModeRates){
+                res.render('index', { pumps: pumps, modes: modes, pumpModeRates: pumpModeRates });
+            });
+        })
     });
 });
 
@@ -35,10 +38,11 @@ router.post('/pumps/delete',function(req,res,next){
     });
 })
 
+
 router.post('/modes/add',function(req,res,next){
    var payLoad = req.body;
    var modeName = payLoad["mode_name"];
-   delete payLoad['modeName'];
+   delete payLoad['mode_name'];
    modeTable.create({mode_name: modeName})
             .then(function(mode){
                 console.log(mode);
@@ -51,5 +55,22 @@ router.post('/modes/add',function(req,res,next){
             })
 
             });
+            
+router.post('/modes/delete',function(req,res,next){
+    var modeName = req.body["mode_name"];
+    pumpModeRateTable.destroy({
+        where:{
+            modeModeName: modeName
+        }
+    })
+    .then(function(affectedRows){
+        console.log(affectedRows);
+        modeTable.destroy({
+            where:{
+                mode_name: modeName
+            }
+        });
+    });
+});
    
 module.exports = router;
