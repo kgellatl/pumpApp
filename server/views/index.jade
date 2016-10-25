@@ -1,15 +1,15 @@
 extends layout
 
 block content
-  div.row#mainHeader
+  div.row#mainHeader.panel
       div.col-lg-12 
-        h3 inDrops Control Panel
-      div.col-lg-12#pcHeader 
-        h4 PumpControls
+        h3.panel-heading inDrops Control Panel
+      div.col-lg-12#pcHeader.panel 
+        h4.panel-title.panel-heading PumpControls
         div.row
         form
-            div.col-lg-8#pcTableBlock
-                table.table
+            div.col-lg-8#pcTableBlock.panel
+                table.table.panel-body
                     thead
                         tr
                         th
@@ -41,8 +41,8 @@ block content
                         each pump in pumps
                             td
                                 button(type="button",name= pump.pump_name).pumpDelete Delete
-        div.col-lg-3#runMode
-            h3 Run mode:
+        div.col-lg-3#runMode.panel
+            h4.panel-heading Run mode:
             form#runModeGroup
             each mode in modes
                 div.radio
@@ -61,20 +61,18 @@ block content
                     div.col-xs-1.text-center
             div.col-xs-1.text-center
                 h4 &nbsp
-        div.col-lg-12#stirrerRowSpace
-            h4 &nbspStirrer motor control
-        div.col-lg-12#stirrerSliderRow
+        div.col-lg-12#stirrerSliderRow.panel
+            h4.panel-heading &nbspStirrer motor control
             div.col-xs-1
             div.col-xs-8
                 input(id='stirrer',type='text',data-slider-min='0',data-slider-max='120',data-slider-step='1',data-slider-value='3')
                 span#stirrerCurrentSliderValLabel &nbspMotor speed (rpm):
                     span#stirrerSliderVal 30
         div.col-lg-12#stirrrRowSpace
-            h4 &nbsp
     
-    div.col-lg-3#mainHeader
-        h3 Add Pump
-        div.col-lg-12#pcHeader
+    div.col-lg-3#mainHeader.panel
+        h4.panel-heading Add Pump
+        div.col-lg-12#pcHeader.container.panel
             form#pumpAdditionForm
                 div.col-xs-10.text-center
                     span Pump Name: 
@@ -84,9 +82,10 @@ block content
                         input(type='text',name='driverCode')
                 div.col-xs-10.text-center
                     input(type='submit', value='Add New Pump')
-    div.col-lg-8#mainHeader
-        h3 Add Run Mode
-        div.col-lg-12#pcHeader
+    td
+    div.col-lg-8#mainHeader.panel
+        h4 Add Run Mode
+        div.col-lg-12#pcHeader.panel
             form#runModeAdditionForm
                 span Run Mode Name:  
                 input(type='text' name='runModeName')
