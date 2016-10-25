@@ -83,12 +83,30 @@ block content
         h3 Add Pump
         div.col-lg-12#pcHeader
             form#pumpAdditionForm
-                span Pump Name: 
-                    input(type='text',name='pumpName')
-                span Driver Code: 
-                    input(type='text',name='driverCode')
+                div.col-xs-10.text-center
+                    span Pump Name: 
+                        input(type='text',name='pumpName')
+                div.col-xs-10.text-center
+                    span Driver Code: 
+                        input(type='text',name='driverCode')
                 div.col-xs-10.text-center
                     input(type='submit', value='Add New Pump')
+    div.col-lg-8#mainHeader
+        h3 Add Run Mode
+        div.col-lg-12#pcHeader
+            form#runModeAdditionForm
+                span Run Mode Name:  
+                input(type='text' name='runModeName')
+                span
+                span
+                h4 Pumps:
+                each pump in pumps
+                    div.col-xs-10.text-center
+                        span #{pump.pump_name} 
+                        input(type='checkbox',name= pump.pump_name)
+                        span Rate(ul/L)
+                        input(type='text', name= pump.pump_name + 'Rate')
+                input(type='submit',value='Add new run mode')
     script.   
      $('.BSswitch').bootstrapSwitch('state', true);
       $('#pauseResume').click(function () {
@@ -147,6 +165,23 @@ block content
         $('.pumpDelete').on('click',function(){
             var pumpName = this.name;
             $.post("pumps/delete",{pump_name: pumpName});
+            location.reload();
+        })
+        
+        $('#runModeAdditionForm').submit(function(event){
+            event.preventDefault();
+            var runModeName = $(this).find('input[name="runModeName"]').val();
+            var checked = $(this).find('input:checked').map(function(){
+                return this.name
+                }).get();
+            var requestJson = {};
+            for(var i =0; i<checked.length;i++){
+               var pumpName = checked[i];
+               var rate = $('#runModeAdditionForm').find('input[name="' + pumpName + 'Rate"]').val();
+               requestJson[pumpName]=rate
+            }
+            requestJson["mode_name"]=runModeName;
+            $.post("modes/add",requestJson);
             location.reload();
         })
         
