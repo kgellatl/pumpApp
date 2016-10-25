@@ -91,7 +91,7 @@ router.post('/pumps/run/:name',function(req,res,next){
              })
 })
 
-router.post('pumps/stop/:name',function(req,res,next){
+router.post('/pumps/stop/:name',function(req,res,next){
     var pumpName = req.params.name;
     pumpTable.findAll({where: {pump_name: pumpName}})
              .then(function(pump){
@@ -131,18 +131,10 @@ router.post('/modes/add',function(req,res,next){
             
 router.post('/modes/delete',function(req,res,next){
     var modeName = req.body["mode_name"];
-    pumpModeRateTable.destroy({
+    modeTable.destroy({
         where:{
-            modeModeName: modeName
+            mode_name: modeName
         }
-    })
-    .then(function(affectedRows){
-        console.log(affectedRows);
-        modeTable.destroy({
-            where:{
-                mode_name: modeName
-            }
-        });
     });
 });
    
