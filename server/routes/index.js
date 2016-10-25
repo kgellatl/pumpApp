@@ -25,9 +25,8 @@ router.get('/pumps/getAccVol/:name',function(req,res,next){
 })
 
 router.post('/pumps/add',function(req,res,next){
-  pumpTable.build({pump_name: req.body.pump_name, driver_code: req.body.driver_code})
-            .save(['pump_name','driver_code'])
-            .success(function(pump) {
+  pumpTable.create({pump_name: req.body.pump_name, driver_code: req.body.driver_code})
+            .then(function(pump) {
                           res.setHeader('Content-Type', 'application/json');
                           res.send(JSON.stringify(pump));
                       });
