@@ -72,13 +72,13 @@ block content
     
     div.col-lg-3#mainHeader.panel
         h4.panel-heading Add Pump
-        div.col-lg-12#pcHeader.container.panel
+        div.col-lg-12#pcHeader.panel
             form#pumpAdditionForm
                 div.input-group
-                    span.input-group-addon Pump Name 
+                    span.input-group-addon Pump Name
                     input(type='text',name='pumpName').form-control
                 div.input-group
-                    span.input-group-addon Driver Code 
+                    span.input-group-addon Driver Code
                     input(type='text',name='driverCode').form-control
                 div.col-xs-10.text-center
                     input(type='submit', value='Add New Pump')
@@ -88,14 +88,14 @@ block content
         div.col-lg-12#pcHeader.panel
             form#runModeAdditionForm.form-group
                 div.input-group
-                    span.input-group-addon Run Mode Name:  
+                    span.input-group-addon Run Mode Name:
                     input(type='text' name='runModeName').form-control
                 span
                 span
                 h4 Pumps:
                 each pump in pumps
                     div.input-group
-                        span #{pump.pump_name} 
+                        span #{pump.pump_name}
                         input(type='checkbox',name= pump.pump_name)
                         span Rate(ul/L)
                         input(type='text', name= pump.pump_name + 'Rate')
