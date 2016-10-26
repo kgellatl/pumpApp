@@ -13,7 +13,7 @@ var pumpTable = models.pump;
 var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
 
-
+board.on("ready",function(){
 /* GET home page. */
 router.get('/', function(req, res, next) {
   pumpTable.findAll().then(function(pumps){
@@ -143,5 +143,5 @@ router.post('/modes/delete',function(req,res,next){
         }
     });
 });
-   
+}  
 module.exports = router;
