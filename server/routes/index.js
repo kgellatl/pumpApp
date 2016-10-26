@@ -1,5 +1,11 @@
 var express = require('express');
 var models  = require('../models');
+var five = require("johnny-five");
+var Raspi = require("raspi-io");
+
+var board = new five.Board({
+  io: new Raspi()
+});
 
 var router = express.Router();
 
