@@ -34,6 +34,7 @@ router.get('/pumps/getAccVol/:name',function(req,res,next){
                           for (var i of data){
                            i = String.fromCharCode(i);
                           }
+                          console.log(data);
                         }
                         );
     });
