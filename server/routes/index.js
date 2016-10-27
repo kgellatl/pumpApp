@@ -1,7 +1,7 @@
 var express = require('express');
 var models  = require('../models');
 var five = require("johnny-five");
-var Raspi = require("raspi");
+var raspi = require("raspi");
 var Serial = require('raspi-serial').Serial;
 
 var router = express.Router();
