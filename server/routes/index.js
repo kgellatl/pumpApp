@@ -31,15 +31,13 @@ router.get('/pumps/getAccVol/:name',function(req,res,next){
                 port.write(output);
                 port.on('data',
                           (data) => {
-                          data = data.map( (element) => {
-                                          String.fromCharCode(element);
-                                            }
-                                         );
-                          console.log(data);
+                          for (var i of data){
+                           i = String.fromCharCode(i);
                           }
+                        }
                         );
     });
-})
+});
 
 router.post('/pumps/add',function(req,res,next){
   pumpTable.create({pump_name: req.body.pump_name, driver_code: req.body.driver_code})
