@@ -24,8 +24,17 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/pumps/getAccVol/:name',function(req,res,next){
-    res.setHeader('Content-Type', 'application/json');
-    res.send({accVol:5});
+    var pumpName = req.params.name;
+    pumpTable.findAll({where: {pump_name:pumpName}})
+             .then(function(pump){
+                var output = pump[0].dataValues.driver_code + "VOL\r";
+                port.write(output);
+                port.on('data',
+                          (data) => {
+                          console.log(data);
+                          }
+                        );
+    });
 })
 
 router.post('/pumps/add',function(req,res,next){
