@@ -31,8 +31,8 @@ router.get('/pumps/getAccVol/:name',function(req,res,next){
                 port.write(output);
                 port.on('data',
                           (data) => {
-                          for (var i of data){
-                           i = String.fromCharCode(i);
+                          for (var i=0;i<data.length; i++){
+                           data[i] = String.fromCharCode(data[i]);
                           }
                           console.log(data);
                         }
