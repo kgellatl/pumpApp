@@ -3,7 +3,7 @@ var models  = require('../models');
 var five = require("johnny-five");
 var raspi = require("raspi");
 var Serial = require('raspi-serial').Serial;
-
+Serial.DEFAULT_PORT = "/dev/ttyUSB0";
 var router = express.Router();
 
 var pumpTable = models.pump;
