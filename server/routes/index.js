@@ -12,7 +12,7 @@ var pumpModeRateTable = models.pump_mode_rate;
 
 raspi.init(function(){
   
-var serial = new Serial({port:'/dev/ttyUSB0'});
+var serial = new Serial({options: {port:'/dev/ttyUSB0'}});
 
 serial.open( () => {
 /* GET home page. */
