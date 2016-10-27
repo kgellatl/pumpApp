@@ -2,19 +2,16 @@ var express = require('express');
 var models  = require('../models');
 var five = require("johnny-five");
 var raspi = require("raspi");
-var Serial = require('raspi-serial').Serial;
-Serial.DEFAULT_PORT = "/dev/ttyUSB0";
+var serialPort = require('serialport');
 var router = express.Router();
 
 var pumpTable = models.pump;
 var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
-
-raspi.init(function(){
   
-var serial = new Serial({options: {port:'/dev/ttyUSB0'}});
+var port = new serialPort('/dev/ttyUSB0');
 
-serial.open( () => {
+port.on('open', () => {
 /* GET home page. */
 router.get('/', function(req, res, next) {
   pumpTable.findAll().then(function(pumps){
@@ -95,7 +92,7 @@ router.post('/pumps/run/:name',function(req,res,next){
     pumpTable.findAll({where: {pump_name: pumpName}})
              .then(function(pump){
                  var output = pump.driver_code + "RUN\r";
-                 serial.write(output);  
+                 port.write(output);  
              })
 })
 
@@ -105,7 +102,7 @@ router.post('/pumps/stop/:name',function(req,res,next){
              .then(function(pump){
                 //use pump DriverCode to tell pump to stop
                 var output = pump.driver_code + "STP\r";
-                serial.write(output);
+                port.write(output);
              })
 })
 
@@ -146,7 +143,6 @@ router.post('/modes/delete',function(req,res,next){
             mode_name: modeName
         }
     });
-});
 });
 });  
 module.exports = router;
