@@ -91,7 +91,7 @@ router.post('/pumps/run/:name',function(req,res,next){
     var rate; 
     pumpTable.findAll({where: {pump_name: pumpName}})
              .then(function(pump){
-                 var output = pump.driver_code + "RUN\r";
+                 var output = pump[0].dataValues.driver_code + "RUN\r";
                  port.write(output);  
              })
 })
@@ -101,7 +101,7 @@ router.post('/pumps/stop/:name',function(req,res,next){
     pumpTable.findAll({where: {pump_name: pumpName}})
              .then(function(pump){
                 //use pump DriverCode to tell pump to stop
-                var output = pump.driver_code + "STP\r";
+                var output = pump[0].dataValues.driver_code + "STP\r";
                 port.write(output);
              })
 })
