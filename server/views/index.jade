@@ -29,8 +29,7 @@ block content
                         td Acc Vol
                         each pump in pumps
                             td
-                                input(name=pump.pump_name).form-control
-                                button(type="button" name = pump.pump_name).updateVol Update Volume
+                                input(id=pump.pump_name + "accVol").form-control
                     tr
                         td
                         each pump in pumps

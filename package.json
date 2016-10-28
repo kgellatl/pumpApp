@@ -7,7 +7,9 @@
   },
   "dependencies": {
     "body-parser": "~1.15.1",
+    "bootstrap": "^3.3.7",
     "cookie-parser": "~1.4.3",
+    "core-js": "^2.4.1",
     "debug": "~2.2.0",
     "express": "~4.13.4",
     "jade": "~1.11.0",
@@ -17,9 +19,8 @@
     "sequelize": "^3.24.5",
     "sequelize-cli": "^2.4.0",
     "serve-favicon": "~2.3.0",
-    "sqlite3": "3.1.6",
-    "bootstrap": "^3.3.7",
-    "core-js": "^2.4.1"
+    "socket.io": "^1.5.1",
+    "sqlite3": "3.1.6"
   },
   "devDependencies": {
     "gulp": "3.9.0",

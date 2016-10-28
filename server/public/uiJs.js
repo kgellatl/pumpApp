@@ -1,3 +1,11 @@
+      var socket = io.connect('http://localhost:8080');
+
+      socket.on('accVolReading', function (data) {
+          var pumpName = data.pumpName;
+          var accVol = data.accVol;
+          $('#' + pumpName + 'accVol').val(accVol);
+      });
+
       $('.BSswitch').bootstrapSwitch('state', true);
       
       $('#pauseResume').click(function () {
@@ -20,14 +28,7 @@
          }
        });
        
-       $('.updateVol').click(function(){
-           var pumpName = this.name;
-           var that = this;
-           $.get("pumps/getAccVol/" + pumpName,function(data){
-               $(that).prev().val(data.accVol)
-           })
-       })
-       
+
        <!-- pump on/off toggle switch handler -->
         $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
           <!--   toggle switch action code goes here -->

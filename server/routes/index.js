@@ -1,7 +1,7 @@
 var express = require('express');
 var models  = require('../models');
-var five = require("johnny-five");
-var raspi = require("raspi");
+var http = require('http');
+var io = require('socket.io').listen(http.createServer().listen(8080));
 var serialPort = require('serialport');
 var router = express.Router();
 
@@ -10,8 +10,57 @@ var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
   
 var port = new serialPort('/dev/ttyUSB0');
+port.on('open',
+    () => {}
+);
 
-port.on('open', () => {
+io.on('connection', function (socket) {
+    socket.emit('news', {hello: 'world'});
+    socket.on('my other event', function (data) {
+        console.log(data);
+    });
+
+    port.on('data',
+        function(data){
+            charString = bufferToCharString(data);
+            if(charString.length==16){
+                pumpTable.findAll({where: {driver_code: "" + charString[14] + charString[15]}})
+                    .then(function(pump){
+                            socker.emit("accVolReading",{
+                                accVol: charString.slice(2,7).reduce( (prev,curr) => prev + curr , ""),
+                                pumpName: pump[0].dataValues.pump_name
+                            })
+                    });
+            }
+        }
+    );
+});
+
+//setup timer for calls to pumps that are currently active, so we can update acc vols
+setInterval(function(){
+    pumpTable.findAll({where: {current_rate: {$gt: 0}}})
+        .then(function(pumps){
+            pump.forEach(
+                (pump)=>{
+                    var output = pump.dataValues.driver_code + "VOL\r";
+                    port.write(output);
+                }
+            );
+        });
+},10,000);
+
+bufferToCharString = function(data){
+    var myCharString = new Array();
+    for (var i=0;i<data.length; i++){
+        myCharString[i] = String.fromCharCode(data[i]);
+    }
+    return myCharString;
+}
+
+process.on('uncaughtException', (err) => {
+   console.log(err);
+});
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   pumpTable.findAll().then(function(pumps){
@@ -29,15 +78,6 @@ router.get('/pumps/getAccVol/:name',function(req,res,next){
              .then(function(pump){
                 var output = pump[0].dataValues.driver_code + "VOL\r";
                 port.write(output);
-                port.on('data',
-                          (data) => {
-                          var myCharString = new Array();
-                          for (var i=0;i<data.length; i++){
-                           myCharString[i] = String.fromCharCode(data[i]);
-                          }
-                          console.log(myCharString);
-                        }
-                        );
     });
 });
 
@@ -157,5 +197,5 @@ router.post('/modes/delete',function(req,res,next){
         }
     });
 });
-});  
+
 module.exports = router;
