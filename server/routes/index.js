@@ -15,11 +15,6 @@ port.on('open',
 );
 
 io.on('connection', function (socket) {
-    socket.emit('news', {hello: 'world'});
-    socket.on('my other event', function (data) {
-        console.log(data);
-    });
-
     port.on('data',
         function(data){
             charString = bufferToCharString(data);
@@ -72,14 +67,6 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.get('/pumps/getAccVol/:name',function(req,res,next){
-    var pumpName = req.params.name;
-    pumpTable.findAll({where: {pump_name:pumpName}})
-             .then(function(pump){
-                var output = pump[0].dataValues.driver_code + "VOL\r";
-                port.write(output);
-    });
-});
 
 router.post('/pumps/add',function(req,res,next){
   pumpTable.create({pump_name: req.body.pump_name, driver_code: req.body.driver_code})
@@ -144,8 +131,9 @@ router.post('/pumps/run/:name',function(req,res,next){
     var rate; 
     pumpTable.findAll({where: {pump_name: pumpName}})
              .then(function(pump){
-                 var output = pump[0].dataValues.driver_code + "RUN\r";
-                 port.write(output);  
+                 pump = pump[0];
+                 var output = pump.dataValues.driver_code + "RUN\r";
+                 port.write(output);
              })
 })
 
@@ -154,8 +142,10 @@ router.post('/pumps/stop/:name',function(req,res,next){
     pumpTable.findAll({where: {pump_name: pumpName}})
              .then(function(pump){
                 //use pump DriverCode to tell pump to stop
-                var output = pump[0].dataValues.driver_code + "STP\r";
-                port.write(output);
+                 pump = pump[0];
+                 pump.updateAttributes({current_rate: 0});
+                 var output = pump[0].dataValues.driver_code + "STP\r";
+                 port.write(output);
              })
 })
 
