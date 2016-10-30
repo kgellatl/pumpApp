@@ -19,17 +19,18 @@ block content
                         td Diam(mm)
                         each pump in pumps
                             td
-                                input.form-control(name = pump.pump_name + 'Syringe')
+                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name="pump.pump_name" value= pump.syringe_diam)
                     tr
                         td Rate (ul/L)
                         each pump in pumps
                             td
-                                input.form-control(name= pump.pump_name + 'Rate', type='text', style='font-size:18px;font-weight:bold')
+                                input.rateChange.form-control(name= pump.pump_name + 'Rate', type='text', style='font-size:18px;font-weight:bold', value=pump.current_rate)
                     tr
                         td Acc Vol
                         each pump in pumps
                             td
                                 input(id=pump.pump_name + "accVol").form-control
+                                button(type="button",name=pump.pump_name).volClear Clear Volume
                     tr
                         td
                         each pump in pumps

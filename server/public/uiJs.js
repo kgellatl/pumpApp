@@ -47,19 +47,26 @@
             var pumpName = $(this).find('input[name=pumpName]').val()
             $.post("pumps/add",{pump_name: pumpName, driver_code: driverCode})
             location.reload();   
-        })
-        
+        });
+
+        $('.volClear').on('click',function(){
+          var pumpName = this.name;
+          $.post("pumps/volClear",{pump_name: pumpName});
+          $(this).prev().val(0);
+        });
+
         $('.pumpDelete').on('click',function(){
             var pumpName = this.name;
             $.post("pumps/delete",{pump_name: pumpName});
             location.reload();
-        })
+        });
         
         $('.modeDelete').on('click',function(){
             var modeName = this.name;
             $.post("modes/delete",{mode_name:modeName});
             location.reload();
-        })
+        });
+
         $('#runModeAdditionForm').submit(function(event){
             event.preventDefault();
             var runModeName = $(this).find('input[name="runModeName"]').val();
@@ -75,21 +82,33 @@
             requestJson["mode_name"]=runModeName;
             $.post("modes/add",requestJson);
             location.reload();
-        })
+        });
         
         <!-- form-control handler -->
-        $('.form-control').on('keypress', function (e) {
+        $('.diamChange').on('keypress', function (e) {
           if (e.which == 13) {   <!-- Enter key -->
              var pumpName = this.name;
              var diam = $(this).val();
-             $.post()
+             $.post("pumps/updateSyringe",{pumpName:pumpName,syringeDiam:diam});
+              location.reload();
           }
         });
+
+      <!-- form-control handler -->
+      $('.rateChange').on('keypress', function (e) {
+          if (e.which == 13) {   <!-- Enter key -->
+              var pumpName = this.name;
+              var rate = $(this).val();
+              $.post("pumps/updateRate",{pumpName:pumpName,rate:rate});
+              location.reload();
+          }
+      });
         
         //run mode radio buttons handlers 
         $('#runModeGroup input').on('change', function() {
-        var groupName = this.value;
-        $.post('pumps/run/' + groupName);
+            $.post('pumps/stopAll');
+            var groupName = this.value;
+            $.post('modes/run/' + groupName);
         });
         
         <!--- Stirrer slider -->

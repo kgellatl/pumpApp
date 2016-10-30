@@ -38,9 +38,6 @@ board.on('ready', function() {
 });
 
 var port = new serialPort('/dev/ttyUSB0');
-port.on('open',
-    () => {}
-);
 
 io.on('connection', function (socket) {
     port.on('data',
@@ -96,38 +93,13 @@ router.get('/', function(req, res, next) {
 });
 
 
-router.post('/pumps/add',function(req,res,next){
-  pumpTable.create({pump_name: req.body.pump_name, driver_code: req.body.driver_code})
-            .then(function(pump) {
-                          res.setHeader('Content-Type', 'application/json');
-                          res.send(JSON.stringify(pump));
-                      });
-    
-});
-
-router.post('/pumps/delete',function(req,res,next){
-    pumpTable.destroy({
-        where:{
-            pump_name: req.body.pump_name
-        }
-    }).then(function(affectedRows){
-        console.log(affectedRows);
-    });
-})
-
-router.post('/pumps/stopAll',function(req,res,next){
-    var pumpsToStop;
-    //find pumps that are on and update thier curRate to 0
-    pumpTable.findAll({where: {current_rate: {$gt: 0}}})
-             .then(function(pumps){
-                if(pumps){
-                   pumpsToStop = pumps;
-                   pumps.forEach( (element) => element.updateAttributes({current_rate: 0}) );                
-                }    
-             });
-    console.log(pumpsToStop);
-    
-    // Need to add code to tell each pump to stop
+router.post('/pumps/volClear',function(req,res,next){
+    pumpTable.findAll({where: {pump_name:pumpName}})
+        .then(function(pump){
+            pump = pump[0];
+            var output = pump.dataValues.driver_code + "CLV\r";
+            port.write(output);
+        });
 });
 
 router.post('/pumps/updateSyringe',function(req,res,next){
@@ -135,23 +107,54 @@ router.post('/pumps/updateSyringe',function(req,res,next){
     var syringeDiam = req.body.syringeDiam;
     pumpTable.findAll({where: {pump_name:pumpName}})
              .then(function(pump){
+                 var pump = pump[0];
                  pump.updateAttributes({syringe_diam:syringeDiam});
-                //send syringe update to pump                 
+                 var output = pump.dataValues.driver_code + "MMD " + syringeDiam + "\r";
+                 port.write(output);
              })
-})
+});
+
+router.post('/pumps/updateRate',function(req,res,next){
+    var pumpName = req.body.pumpName;
+    var rate = parseFloat(req.body.rate).toFixed(3);
+    pumpTable.findAll({where: {pump_name:pumpName}})
+        .then(function(pump){
+            var pump = pump[0];
+            pump.updateAttributes({current_rate:rate});
+            var output = pump.dataValues.driver_code + "ULH " + rate + "\r";
+            port.write(output);
+        })
+});
 
 router.post('/pumps/runAll',function(req,res,next){
-    var pumpsWithDefautRates = {};
     pumpTable.findAll()
              .then(function(pumps){
                   pumps.forEach( 
                   (element) => {
-                  element.updateAttributes({current_rate: element.default_rate});
-                  pumpsWithDefautRates[element.pump_name] = element.default_rate;
+                  element.updateAttributes({current_rate: element.dataValues.default_rate});
+                  var output = element.dataValues.driver_code + "RUN\r";
+                  port.write(output);
                   });
               });
-    console.log(pumpsWithDefautRates);
 })
+
+router.post('/pumps/stopAll',function(req,res,next){
+    var pumpsToStop;
+    //find pumps that are on and update thier curRate to 0
+    pumpTable.findAll({where: {current_rate: {$gt: 0}}})
+        .then(function(pumps){
+            if(pumps){
+                pumpsToStop = pumps;
+                pumps.forEach(
+                    (element) => {
+                        element.updateAttributes({current_rate: 0}) );
+                        var output = element.dataValues.driver_code + "STP\r";
+                        port.write(output);
+                    });
+            }
+        });
+});
+
 
 router.post('/pumps/run/:name',function(req,res,next){
     //need to decide how to tell it what speed 
@@ -172,7 +175,7 @@ router.post('/pumps/stop/:name',function(req,res,next){
                 //use pump DriverCode to tell pump to stop
                  pump = pump[0];
                  pump.updateAttributes({current_rate: 0});
-                 var output = pump[0].dataValues.driver_code + "STP\r";
+                 var output = pump.dataValues.driver_code + "STP\r";
                  port.write(output);
              })
 })
@@ -183,8 +186,9 @@ router.post('/modes/run/:name',function(req,res,next){
                      .then(function(pumpModeRates){
                          pumpModeRates.forEach(
                          (element) => {
-                             pumpTable.updateAttributes({current_rate: element.rate})
-                             //need to add call to each pump here
+                             pumpTable.updateAttributes({current_rate: element.dataValues.rate})
+                             var output = element.dataValues.driver_code + "RUN\r";
+                             port.write(output);
                          })
                      });
 })
@@ -215,5 +219,24 @@ router.post('/modes/delete',function(req,res,next){
         }
     });
 });
+
+router.post('/pumps/add',function(req,res,next){
+    pumpTable.create({pump_name: req.body.pump_name, driver_code: req.body.driver_code})
+        .then(function(pump) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(pump));
+        });
+
+});
+
+router.post('/pumps/delete',function(req,res,next){
+    pumpTable.destroy({
+        where:{
+            pump_name: req.body.pump_name
+        }
+    }).then(function(affectedRows){
+        console.log(affectedRows);
+    });
+})
 
 module.exports = router;
