@@ -97,3 +97,6 @@
         $("#stirrer").on("slide", function(slideEvt) {
         $("#stirrerSliderVal").text(slideEvt.value);
         });
+        $("#stirrer").on("slideStop", function(slideEvt) {
+          socket.emit('motorChange',{rate: slideEvt.value});
+        });

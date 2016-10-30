@@ -4,11 +4,39 @@ var http = require('http');
 var io = require('socket.io').listen(http.createServer().listen(8080));
 var serialPort = require('serialport');
 var router = express.Router();
+var raspi = require('raspi-io');
+var five = require('johnny-five');
+
 
 var pumpTable = models.pump;
 var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
-  
+
+//initialize servo motor
+var board = new five.Board({
+    io: new raspi()
+});
+
+board.on('ready', function() {
+
+    var motor1 = new five.Motor({
+        pins: {
+            pwm: 1
+        }
+    });
+
+    socket.on('motorChange',function(data){
+        var rate = data.rate;
+        var motorFract = data.rate/100.0;
+        if(motorFract==0.0) {
+            rate = 0;
+        }else{
+            rate = motorFract*(1023-300)+300;
+        }
+        motor1.start(rate);
+    })
+});
+
 var port = new serialPort('/dev/ttyUSB0');
 port.on('open',
     () => {}
@@ -21,7 +49,7 @@ io.on('connection', function (socket) {
             if(charString.length==16){
                 pumpTable.findAll({where: {driver_code: "" + charString[14] + charString[15]}})
                     .then(function(pump){
-                            socker.emit("accVolReading",{
+                            socket.emit("accVolReading",{
                                 accVol: charString.slice(2,7).reduce( (prev,curr) => prev + curr , ""),
                                 pumpName: pump[0].dataValues.pump_name
                             })
