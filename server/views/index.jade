@@ -36,7 +36,7 @@ block content
                         each pump in pumps
                             td
                                 input.BSswitch(name=pump.pump_name, type='checkbox',data-off-text='Stopped',data-on-text='Running',data-on-color='success',data-off-color='danger',checked)
-                    tr
+                    tr(visibility=displayForAdmin)
                         td
                         each pump in pumps
                             td
@@ -52,7 +52,7 @@ block content
                     label(title="#{getToolTip(mode.mode_name)}")
                         input(type='radio',name='runMode' value=mode.mode_name,style='height:20px; width:20px; vertical-align: middle;')
                         |#{mode.mode_name}
-                    label
+                    label(visibility=displayForAdmin)
                         button(type="button" name=mode.mode_name).modeDelete Delete
             div.col-xs-12.text-center
                     div.col-xs-1.text-center
@@ -70,7 +70,7 @@ block content
                     span#stirrerSliderVal 30
         div.col-lg-12#stirrrRowSpace
     
-    div.col-lg-3#mainHeader.panel
+    div.col-lg-3#mainHeader.panel(visibility=displayForAdmin)
         h4.panel-heading Add Pump
         div.col-lg-12#pcHeader.panel
             form#pumpAdditionForm
@@ -82,8 +82,8 @@ block content
                     input(type='text',name='driverCode').form-control
                 div.col-xs-10.text-center
                     input(type='submit', value='Add New Pump')
-    td
-    div.col-lg-8#mainHeader.panel
+    td(visibility=displayForAdmin)
+    div.col-lg-8#mainHeader.panel(visibility=displayForAdmin)
         h4 Add Run Mode
         div.col-lg-12#pcHeader.panel
             form#runModeAdditionForm.form-group

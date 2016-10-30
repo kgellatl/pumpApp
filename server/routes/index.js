@@ -86,7 +86,7 @@ router.get('/', function(req, res, next) {
   pumpTable.findAll().then(function(pumps){
         modeTable.findAll().then(function(modes){
             pumpModeRateTable.findAll().then(function(pumpModeRates){
-                res.render('index', { pumps: pumps, modes: modes, pumpModeRates: pumpModeRates });
+                res.render('index', { pumps: pumps, modes: modes, pumpModeRates: pumpModeRates , displayForAdmin: process.argv.length==3?"none":"inline"});
             });
         })
     });
