@@ -19,17 +19,17 @@ block content
                         td Diam(mm)
                         each pump in pumps
                             td
-                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name=pump.pump_name value= pump.syringe_diam)
+                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name=pump.pump_name value= pump.syringe_diam,disabled)
                     tr
                         td Rate (ul/L)
                         each pump in pumps
                             td
-                                input.rateChange.form-control(name= pump.pump_name + 'Rate', type='text', style='font-size:18px;font-weight:bold', value=pump.current_rate)
+                                input.rateChange.form-control(id= pump.pump_name + 'Rate', name = pump.pump_name, type='text', value=pump.current_rate,disabled)
                     tr
                         td Acc Vol
                         each pump in pumps
                             td
-                                input(id=pump.pump_name + "accVol").form-control
+                                input(id=pump.pump_name + "accVol" readonly).form-control
                                 button(type="button",name=pump.pump_name).volClear Clear Volume
                     tr
                         td
@@ -47,12 +47,12 @@ block content
             each mode in modes
                 div.radio
                     - var getToolTip = function(modeName){
-                    -   return pumpModeRates.filter(function(pumpModeRate){return pumpModeRate.modeModeName==modeName}).reduce((prev,curr) => prev + " " + curr.pumpPumpName + ": " + curr.rate , "")
+                    -   return pumpModeRates.filter(function(pumpModeRate){return pumpModeRate.modeModeName==modeName}).reduce( (prev,curr) => prev + " " + curr.pumpPumpName + ": " + curr.rate , "")
                     - }
                     label(title="#{getToolTip(mode.mode_name)}")
                         input(type='radio',name='runMode' value=mode.mode_name,style='height:20px; width:20px; vertical-align: middle;')
                         |#{mode.mode_name}
-                    label(visibility=displayForAdmin)
+                    label(style=displayForAdmin)
                         button(type="button" name=mode.mode_name).modeDelete Delete
             div.col-xs-12.text-center
                     div.col-xs-1.text-center

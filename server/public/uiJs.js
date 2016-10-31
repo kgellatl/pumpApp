@@ -6,25 +6,24 @@
           $('#' + pumpName + 'accVol').val(accVol);
       });
 
-      $('.BSswitch').bootstrapSwitch('state', true);
-      
+      $('.BSswitch').bootstrapSwitch('state', false);
+
       $('#pauseResume').click(function () {
-         $('.BSswitch ').bootstrapSwitch('toggleDisabled');
-    
+
          if ($(this).text()=='Pause All') {
             // Pause All:
             $(this).text('Resume All');
             $(this).removeClass('red');     
             $(this).addClass('green');
-            $.post('pumps/stopAll');
+             $('.BSswitch ').bootstrapSwitch('state',false,false);
             }
     
             else {
             // Resume All:
-            $(this).text('Pause All');
-            $(this).removeClass('green');     
-            $(this).addClass('red');     
-            $.post('pumps/runAll');
+             $(this).text('Pause All');
+             $(this).removeClass('green');
+             $(this).addClass('red');
+             $('.BSswitch ').bootstrapSwitch('state',true,false);
          }
        });
        
@@ -34,9 +33,13 @@
           <!--   toggle switch action code goes here -->
           var pumpName = this.name;
           if ($(this).bootstrapSwitch('state')) {
-            $.post('pumps/run/' + pumpName);
+              $('#' + pumpName + 'Rate').attr("disabled",false);
+              $('#' + pumpName + 'Syringe').attr("disabled",false);
+              $.post('pumps/run/' + pumpName);
           } else {
-            $.post('pumps/stop/' + pumpName);
+              $('#' + pumpName + 'Rate').attr("disabled",true);
+              $('#' + pumpName + 'Syringe').attr("disabled",true);
+              $.post('pumps/stop/' + pumpName);
           }
         
         });
@@ -103,12 +106,19 @@
               location.reload();
           }
       });
-        
-        //run mode radio buttons handlers 
-        $('#runModeGroup input').on('change', function() {
-            $.post('pumps/stopAll');
-            var groupName = this.value;
-            $.post('modes/run/' + groupName);
+
+        //run mode radio buttons handlers
+        $('.radio').find("input").on('change', function() {
+            if(this.checked) {
+                $('.BSswitch ').bootstrapSwitch('state', false, false);
+                var groupName = this.value;
+                $.post('modes/run/' + groupName, function (data) {
+                    data.pumps.forEach(function (element) {
+                        $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
+                        $('#' + element.pumpName + 'Rate').val(element.rate);
+                    })
+                })
+            }
         });
         
         <!--- Stirrer slider -->

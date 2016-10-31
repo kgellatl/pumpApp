@@ -13,13 +13,20 @@ process.on('uncaughtException', (err) => {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  pumpTable.findAll().then(function(pumps){
-        modeTable.findAll().then(function(modes){
-            pumpModeRateTable.findAll().then(function(pumpModeRates){
-                res.render('index', { pumps: pumps, modes: modes, pumpModeRates: pumpModeRates , displayForAdmin: process.argv.length==3?"":"display:none"});
-            });
-        })
-    });
+  setTimeout(function() {
+      pumpTable.findAll().then(function (pumps) {
+          modeTable.findAll().then(function (modes) {
+              pumpModeRateTable.findAll().then(function (pumpModeRates) {
+                  res.render('index', {
+                      pumps: pumps,
+                      modes: modes,
+                      pumpModeRates: pumpModeRates,
+                      displayForAdmin: process.argv.length == 3 ? "" : "display:none"
+                  });
+              });
+          })
+      });
+  },50);
 });
 
 
@@ -27,8 +34,9 @@ router.post('/pumps/volClear',function(req,res,next){
     pumpTable.findAll({where: {pump_name:pumpName}})
         .then(function(pump){
             pump = pump[0];
-            var output = pump.dataValues.driver_code + "CLV\r";
+            var output = pump.driver_code + "CLV\r";
             serialBus.write(output);
+            res.end();
         });
 });
 
@@ -37,10 +45,12 @@ router.post('/pumps/updateSyringe',function(req,res,next){
     var syringeDiam = req.body.syringeDiam;
     pumpTable.findAll({where: {pump_name:pumpName}})
              .then(function(pump){
-                 var pump = pump[0];
-                 pump.updateAttributes({syringe_diam:syringeDiam});
-                 var output = pump.dataValues.driver_code + "MMD " + syringeDiam + "\r";
-                 serialBus.write(output);
+                     var pump = pump[0];
+                     pump.update({syringe_diam:syringeDiam}).then(function() {
+                     var output = pump.driver_code + "MMD " + syringeDiam + "\r";
+                     serialBus.write(output);
+                     res.end();
+                 });
              })
 });
 
@@ -51,20 +61,24 @@ router.post('/pumps/updateRate',function(req,res,next){
         .then(function(pump){
             var pump = pump[0];
             pump.updateAttributes({current_rate:rate});
-            var output = pump.dataValues.driver_code + "ULH " + rate + "\r";
+            var output = pump.driver_code + "ULH " + rate + "\r";
             serialBus.write(output);
+            res.end();
         })
 });
 
+/*
 router.post('/pumps/runAll',function(req,res,next){
     pumpTable.findAll()
              .then(function(pumps){
                   pumps.forEach( 
-                  (element) => {
-                  element.updateAttributes({current_rate: element.dataValues.default_rate});
-                  var output = element.dataValues.driver_code + "RUN\r";
-                  serialBus.write(output);
-                  });
+                      (element) => {
+                          element.updateAttributes({current_rate: element.default_rate});
+                          var output = element.driver_code + "RUN\r";
+                          serialBus.write(output);
+                          res.end();
+                      }
+                  );
               });
 })
 
@@ -78,12 +92,15 @@ router.post('/pumps/stopAll',function(req,res,next){
                 pumps.forEach(
                     (element) => {
                         element.updateAttributes({current_rate: 0});
-                        var output = element.dataValues.driver_code + "STP\r";
+                        var output = element.driver_code + "STP\r";
                         serialBus.write(output);
-                    });
+                        res.end();
+                    }
+                );
             }
         });
 });
+*/
 
 
 router.post('/pumps/run/:name',function(req,res,next){
@@ -93,8 +110,9 @@ router.post('/pumps/run/:name',function(req,res,next){
     pumpTable.findAll({where: {pump_name: pumpName}})
              .then(function(pump){
                  pump = pump[0];
-                 var output = pump.dataValues.driver_code + "RUN\r";
+                 var output = pump.driver_code + "RUN\r";
                  serialBus.write(output);
+                 res.end();
              })
 })
 
@@ -105,21 +123,30 @@ router.post('/pumps/stop/:name',function(req,res,next){
                 //use pump DriverCode to tell pump to stop
                  pump = pump[0];
                  pump.updateAttributes({current_rate: 0});
-                 var output = pump.dataValues.driver_code + "STP\r";
+                 var output = pump.driver_code + "STP\r";
                  serialBus.write(output);
+                 res.end();
              })
 })
 
 router.post('/modes/run/:name',function(req,res,next){
     var modeName = req.params.name;
+    var response = {};
+    response.pumps = new Array();
+
     pumpModeRateTable.findAll({where: {modeModeName: modeName}})
                      .then(function(pumpModeRates){
                          pumpModeRates.forEach(
                          (element) => {
-                             pumpTable.updateAttributes({current_rate: element.dataValues.rate})
-                             var output = element.dataValues.driver_code + "RUN\r";
-                             serialBus.write(output);
+                             pumpTable.findAll({where: {pump_name: element.pumpPumpName}}).then(function (pump) {
+                                pump[0].updateAttributes({current_rate: element.rate})
+                                var output = pump[0].driver_code + "RUN\r";
+                                serialBus.write(output);
+                             });
+                            response.pumps.push({pumpName: element.pumpPumpName,rate:element.rate});
                          })
+                         res.setHeader('Content-Type', 'application/json');
+                         res.send(JSON.stringify(response));
                      });
 })
 
@@ -137,6 +164,7 @@ router.post('/modes/add',function(req,res,next){
                             console.log(pumpModeRate);
                         });
                 }
+                res.end();
             })
 
             });
@@ -148,6 +176,7 @@ router.post('/modes/delete',function(req,res,next){
             mode_name: modeName
         }
     });
+    res.end();
 });
 
 router.post('/pumps/add',function(req,res,next){
@@ -156,7 +185,6 @@ router.post('/pumps/add',function(req,res,next){
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify(pump));
         });
-
 });
 
 router.post('/pumps/delete',function(req,res,next){
@@ -166,6 +194,7 @@ router.post('/pumps/delete',function(req,res,next){
         }
     }).then(function(affectedRows){
         console.log(affectedRows);
+        res.end();
     });
 })
 
