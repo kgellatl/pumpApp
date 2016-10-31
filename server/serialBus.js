@@ -50,13 +50,30 @@ serialBus.initialize = function() {
                         .then(function (pump) {
                             socket.emit("accVolReading", {
                                 accVol: charString.slice(2, 7).reduce( (prev, curr) => prev + curr, ""),
-                                pumpName: pump[0].dataValues.pump_name
+                                pumpName: pump[0].pump_name,
+                                units: charString.slice(10, 2).reduce( (prev, curr) => prev + curr, "")
                         });
+
+                            socket.emit("pumpStatus",{
+                                pump:pump[0].pump_name,
+                                status:statusTranslation(charString.slice(16,1))
+                            });
                         });
                 }
             }
         );
     });
+
+    function statusTranslation(input){
+        switch(input){
+            case ":":
+                return "Stopped"
+            case ">":
+                return "Running"
+            case "*T":
+                return "Target Volume Reached"
+        }
+    }
 
 //setup timer for calls to pumps that are currently active, so we can update acc vols
     setInterval(function () {
@@ -65,8 +82,8 @@ serialBus.initialize = function() {
                 pump.forEach(
                     (pump) => {
                     var output = pump.dataValues.driver_code + "VOL\r";
-                    port.write(output);
-                    }
+                port.write(output);
+            }
                 )
                 ;
             });

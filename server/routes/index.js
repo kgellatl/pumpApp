@@ -8,25 +8,25 @@ var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
 
 process.on('uncaughtException', (err) => {
-   console.log(err);
+    console.log(err);
 });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  setTimeout(function() {
-      pumpTable.findAll().then(function (pumps) {
-          modeTable.findAll().then(function (modes) {
-              pumpModeRateTable.findAll().then(function (pumpModeRates) {
-                  res.render('index', {
-                      pumps: pumps,
-                      modes: modes,
-                      pumpModeRates: pumpModeRates,
-                      displayForAdmin: process.argv.length == 3 ? "" : "display:none"
-                  });
-              });
-          })
-      });
-  },50);
+    setTimeout(function() {
+        pumpTable.findAll().then(function (pumps) {
+            modeTable.findAll().then(function (modes) {
+                pumpModeRateTable.findAll().then(function (pumpModeRates) {
+                    res.render('index', {
+                        pumps: pumps,
+                        modes: modes,
+                        pumpModeRates: pumpModeRates,
+                        displayForAdmin: process.argv.length == 3 ? "" : "display:none"
+                    });
+                });
+            })
+        });
+    },50);
 });
 
 
@@ -44,14 +44,14 @@ router.post('/pumps/updateSyringe',function(req,res,next){
     var pumpName = req.body.pumpName;
     var syringeDiam = req.body.syringeDiam;
     pumpTable.findAll({where: {pump_name:pumpName}})
-             .then(function(pump){
-                     var pump = pump[0];
-                     pump.update({syringe_diam:syringeDiam}).then(function() {
-                     var output = pump.driver_code + "MMD " + syringeDiam + "\r";
-                     serialBus.write(output);
-                     res.end();
-                 });
-             })
+        .then(function(pump){
+            var pump = pump[0];
+            pump.update({syringe_diam:syringeDiam}).then(function() {
+                var output = pump.driver_code + "MMD " + syringeDiam + "\r";
+                serialBus.write(output);
+                res.end();
+            });
+        })
 });
 
 router.post('/pumps/updateRate',function(req,res,next){
@@ -68,65 +68,65 @@ router.post('/pumps/updateRate',function(req,res,next){
 });
 
 /*
-router.post('/pumps/runAll',function(req,res,next){
-    pumpTable.findAll()
-             .then(function(pumps){
-                  pumps.forEach( 
-                      (element) => {
-                          element.updateAttributes({current_rate: element.default_rate});
-                          var output = element.driver_code + "RUN\r";
-                          serialBus.write(output);
-                          res.end();
-                      }
-                  );
-              });
-})
+ router.post('/pumps/runAll',function(req,res,next){
+ pumpTable.findAll()
+ .then(function(pumps){
+ pumps.forEach(
+ (element) => {
+ element.updateAttributes({current_rate: element.default_rate});
+ var output = element.driver_code + "RUN\r";
+ serialBus.write(output);
+ res.end();
+ }
+ );
+ });
+ })
 
-router.post('/pumps/stopAll',function(req,res,next){
-    var pumpsToStop;
-    //find pumps that are on and update thier curRate to 0
-    pumpTable.findAll({where: {current_rate: {$gt: 0}}})
-        .then(function(pumps){
-            if(pumps){
-                pumpsToStop = pumps;
-                pumps.forEach(
-                    (element) => {
-                        element.updateAttributes({current_rate: 0});
-                        var output = element.driver_code + "STP\r";
-                        serialBus.write(output);
-                        res.end();
-                    }
-                );
-            }
-        });
-});
-*/
+ router.post('/pumps/stopAll',function(req,res,next){
+ var pumpsToStop;
+ //find pumps that are on and update thier curRate to 0
+ pumpTable.findAll({where: {current_rate: {$gt: 0}}})
+ .then(function(pumps){
+ if(pumps){
+ pumpsToStop = pumps;
+ pumps.forEach(
+ (element) => {
+ element.updateAttributes({current_rate: 0});
+ var output = element.driver_code + "STP\r";
+ serialBus.write(output);
+ res.end();
+ }
+ );
+ }
+ });
+ });
+ */
 
 
 router.post('/pumps/run/:name',function(req,res,next){
     //need to decide how to tell it what speed 
     var pumpName = req.params.name;
-    var rate; 
+    var rate;
     pumpTable.findAll({where: {pump_name: pumpName}})
-             .then(function(pump){
-                 pump = pump[0];
-                 var output = pump.driver_code + "RUN\r";
-                 serialBus.write(output);
-                 res.end();
-             })
+        .then(function(pump){
+            pump = pump[0];
+            var output = pump.driver_code + "RUN\r";
+            serialBus.write(output);
+            res.end();
+        })
 })
 
 router.post('/pumps/stop/:name',function(req,res,next){
     var pumpName = req.params.name;
     pumpTable.findAll({where: {pump_name: pumpName}})
-             .then(function(pump){
-                //use pump DriverCode to tell pump to stop
-                 pump = pump[0];
-                 pump.updateAttributes({current_rate: 0});
-                 var output = pump.driver_code + "STP\r";
-                 serialBus.write(output);
-                 res.end();
-             })
+        .then(function(pump){
+            //use pump DriverCode to tell pump to stop
+            pump = pump[0];
+            pump.updateAttributes({current_rate: 0});
+            var output = pump.driver_code + "STP\r";
+            serialBus.write(output);
+            res.end();
+        })
 })
 
 router.post('/modes/run/:name',function(req,res,next){
@@ -135,40 +135,40 @@ router.post('/modes/run/:name',function(req,res,next){
     response.pumps = new Array();
 
     pumpModeRateTable.findAll({where: {modeModeName: modeName}})
-                     .then(function(pumpModeRates){
-                         pumpModeRates.forEach(
-                         (element) => {
-                             pumpTable.findAll({where: {pump_name: element.pumpPumpName}}).then(function (pump) {
-                                pump[0].updateAttributes({current_rate: element.rate})
-                                var output = pump[0].driver_code + "RUN\r";
-                                serialBus.write(output);
-                             });
-                            response.pumps.push({pumpName: element.pumpPumpName,rate:element.rate});
-                         })
-                         res.setHeader('Content-Type', 'application/json');
-                         res.send(JSON.stringify(response));
-                     });
+        .then(function(pumpModeRates){
+            pumpModeRates.forEach(
+                (element) => {
+                pumpTable.findAll({where: {pump_name: element.pumpPumpName}}).then(function (pump) {
+                pump[0].updateAttributes({current_rate: element.rate})
+                var output = pump[0].driver_code + "RUN\r";
+                serialBus.write(output);
+            });
+            response.pumps.push({pumpName: element.pumpPumpName,rate:element.rate});
+        })
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(response));
+        });
 })
 
 
 router.post('/modes/add',function(req,res,next){
-   var payLoad = req.body;
-   var modeName = payLoad["mode_name"];
-   delete payLoad['mode_name'];
-   modeTable.create({mode_name: modeName})
-            .then(function(mode){
-                console.log(mode);
-                for(var prop in payLoad){
-                        pumpModeRateTable.create({modeModeName: modeName, pumpPumpName: prop, rate: payLoad[prop]})
-                        .then(function(pumpModeRate){
-                            console.log(pumpModeRate);
-                        });
-                }
-                res.end();
-            })
+    var payLoad = req.body;
+    var modeName = payLoad["mode_name"];
+    delete payLoad['mode_name'];
+    modeTable.create({mode_name: modeName})
+        .then(function(mode){
+            console.log(mode);
+            for(var prop in payLoad){
+                pumpModeRateTable.create({modeModeName: modeName, pumpPumpName: prop, rate: payLoad[prop]})
+                    .then(function(pumpModeRate){
+                        console.log(pumpModeRate);
+                    });
+            }
+            res.end();
+        })
 
-            });
-            
+});
+
 router.post('/modes/delete',function(req,res,next){
     var modeName = req.body["mode_name"];
     modeTable.destroy({
