@@ -8,6 +8,11 @@
 
       $('.BSswitch').bootstrapSwitch('state', false);
 
+      $('#switchCellPump').click(function(){
+          $('.BSswitch[name=cells1]').bootstrapSwitch('toggleState');
+          $('.BSswitch[name=cells2]').bootstrapSwitch('toggleState');
+      });
+
       $('#pauseResume').click(function () {
 
          if ($(this).text()=='Pause All') {
