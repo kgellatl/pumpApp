@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "admin": "node ./bin/www admin",
-    "start": "node ./bin/www"
+    "admin": "node ./server/bin/www admin",
+    "start": "node ./server/bin/www"
   },
   "dependencies": {
     "body-parser": "~1.15.1",

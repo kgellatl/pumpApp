@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
   pumpTable.findAll().then(function(pumps){
         modeTable.findAll().then(function(modes){
             pumpModeRateTable.findAll().then(function(pumpModeRates){
-                res.render('index', { pumps: pumps, modes: modes, pumpModeRates: pumpModeRates , displayForAdmin: process.argv.length==3?"none":"inline"});
+                res.render('index', { pumps: pumps, modes: modes, pumpModeRates: pumpModeRates , displayForAdmin: process.argv.length==3?"":"display:none"});
             });
         })
     });
@@ -77,7 +77,7 @@ router.post('/pumps/stopAll',function(req,res,next){
                 pumpsToStop = pumps;
                 pumps.forEach(
                     (element) => {
-                        element.updateAttributes({current_rate: 0}) );
+                        element.updateAttributes({current_rate: 0});
                         var output = element.dataValues.driver_code + "STP\r";
                         serialBus.write(output);
                     });

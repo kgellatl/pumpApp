@@ -19,7 +19,7 @@ block content
                         td Diam(mm)
                         each pump in pumps
                             td
-                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name="pump.pump_name" value= pump.syringe_diam)
+                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name=pump.pump_name value= pump.syringe_diam)
                     tr
                         td Rate (ul/L)
                         each pump in pumps
@@ -36,7 +36,7 @@ block content
                         each pump in pumps
                             td
                                 input.BSswitch(name=pump.pump_name, type='checkbox',data-off-text='Stopped',data-on-text='Running',data-on-color='success',data-off-color='danger',checked)
-                    tr(visibility=displayForAdmin)
+                    tr(style=displayForAdmin)
                         td
                         each pump in pumps
                             td
@@ -70,7 +70,7 @@ block content
                     span#stirrerSliderVal 30
         div.col-lg-12#stirrrRowSpace
     
-    div.col-lg-3#mainHeader.panel(visibility=displayForAdmin)
+    div.col-lg-3#mainHeader.panel(style=displayForAdmin)
         h4.panel-heading Add Pump
         div.col-lg-12#pcHeader.panel
             form#pumpAdditionForm
@@ -82,8 +82,8 @@ block content
                     input(type='text',name='driverCode').form-control
                 div.col-xs-10.text-center
                     input(type='submit', value='Add New Pump')
-    td(visibility=displayForAdmin)
-    div.col-lg-8#mainHeader.panel(visibility=displayForAdmin)
+    td(style=displayForAdmin)
+    div.col-lg-8#mainHeader.panel(style=displayForAdmin)
         h4 Add Run Mode
         div.col-lg-12#pcHeader.panel
             form#runModeAdditionForm.form-group
