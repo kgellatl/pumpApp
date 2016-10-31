@@ -1,81 +1,11 @@
 var express = require('express');
 var models  = require('../models');
-var http = require('http');
-var io = require('socket.io').listen(http.createServer().listen(8080));
-var serialPort = require('serialport');
 var router = express.Router();
-var raspi = require('raspi-io');
-var five = require('johnny-five');
-
+var serialBus = require('../serialBus');
 
 var pumpTable = models.pump;
 var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
-
-//initialize servo motor
-var board = new five.Board({
-    io: new raspi()
-});
-
-board.on('ready', function() {
-
-    var motor1 = new five.Motor({
-        pins: {
-            pwm: 1
-        }
-    });
-
-    socket.on('motorChange',function(data){
-        var rate = data.rate;
-        var motorFract = data.rate/100.0;
-        if(motorFract==0.0) {
-            rate = 0;
-        }else{
-            rate = motorFract*(1023-300)+300;
-        }
-        motor1.start(rate);
-    })
-});
-
-var port = new serialPort('/dev/ttyUSB0');
-
-io.on('connection', function (socket) {
-    port.on('data',
-        function(data){
-            charString = bufferToCharString(data);
-            if(charString.length==16){
-                pumpTable.findAll({where: {driver_code: "" + charString[14] + charString[15]}})
-                    .then(function(pump){
-                            socket.emit("accVolReading",{
-                                accVol: charString.slice(2,7).reduce( (prev,curr) => prev + curr , ""),
-                                pumpName: pump[0].dataValues.pump_name
-                            })
-                    });
-            }
-        }
-    );
-});
-
-//setup timer for calls to pumps that are currently active, so we can update acc vols
-setInterval(function(){
-    pumpTable.findAll({where: {current_rate: {$gt: 0}}})
-        .then(function(pumps){
-            pump.forEach(
-                (pump)=>{
-                    var output = pump.dataValues.driver_code + "VOL\r";
-                    port.write(output);
-                }
-            );
-        });
-},10,000);
-
-bufferToCharString = function(data){
-    var myCharString = new Array();
-    for (var i=0;i<data.length; i++){
-        myCharString[i] = String.fromCharCode(data[i]);
-    }
-    return myCharString;
-}
 
 process.on('uncaughtException', (err) => {
    console.log(err);
@@ -98,7 +28,7 @@ router.post('/pumps/volClear',function(req,res,next){
         .then(function(pump){
             pump = pump[0];
             var output = pump.dataValues.driver_code + "CLV\r";
-            port.write(output);
+            serialBus.write(output);
         });
 });
 
@@ -110,7 +40,7 @@ router.post('/pumps/updateSyringe',function(req,res,next){
                  var pump = pump[0];
                  pump.updateAttributes({syringe_diam:syringeDiam});
                  var output = pump.dataValues.driver_code + "MMD " + syringeDiam + "\r";
-                 port.write(output);
+                 serialBus.write(output);
              })
 });
 
@@ -122,7 +52,7 @@ router.post('/pumps/updateRate',function(req,res,next){
             var pump = pump[0];
             pump.updateAttributes({current_rate:rate});
             var output = pump.dataValues.driver_code + "ULH " + rate + "\r";
-            port.write(output);
+            serialBus.write(output);
         })
 });
 
@@ -133,7 +63,7 @@ router.post('/pumps/runAll',function(req,res,next){
                   (element) => {
                   element.updateAttributes({current_rate: element.dataValues.default_rate});
                   var output = element.dataValues.driver_code + "RUN\r";
-                  port.write(output);
+                  serialBus.write(output);
                   });
               });
 })
@@ -149,7 +79,7 @@ router.post('/pumps/stopAll',function(req,res,next){
                     (element) => {
                         element.updateAttributes({current_rate: 0}) );
                         var output = element.dataValues.driver_code + "STP\r";
-                        port.write(output);
+                        serialBus.write(output);
                     });
             }
         });
@@ -164,7 +94,7 @@ router.post('/pumps/run/:name',function(req,res,next){
              .then(function(pump){
                  pump = pump[0];
                  var output = pump.dataValues.driver_code + "RUN\r";
-                 port.write(output);
+                 serialBus.write(output);
              })
 })
 
@@ -176,7 +106,7 @@ router.post('/pumps/stop/:name',function(req,res,next){
                  pump = pump[0];
                  pump.updateAttributes({current_rate: 0});
                  var output = pump.dataValues.driver_code + "STP\r";
-                 port.write(output);
+                 serialBus.write(output);
              })
 })
 
@@ -188,7 +118,7 @@ router.post('/modes/run/:name',function(req,res,next){
                          (element) => {
                              pumpTable.updateAttributes({current_rate: element.dataValues.rate})
                              var output = element.dataValues.driver_code + "RUN\r";
-                             port.write(output);
+                             serialBus.write(output);
                          })
                      });
 })
