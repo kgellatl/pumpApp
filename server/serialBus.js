@@ -82,8 +82,8 @@ serialBus.initialize = function() {
                 pump.forEach(
                     (pump) => {
                     var output = pump.dataValues.driver_code + "VOL\r";
-                port.write(output);
-            }
+                    port.write(output);
+                    }
                 )
                 ;
             });
