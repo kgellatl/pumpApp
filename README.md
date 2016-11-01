@@ -4,6 +4,7 @@ Purpose:
     Should be able to dictate flow rate as well as syringe diameter, via a ui that is communicating with a server that is then delegating the commands to the appropriate channel for the pumps.
 
 File Contents:
+
     -./server/bin/www
         Entry point for the server process. This file is resposible for communitcating most directly with the node process to ensure that the host machine is listening on certain ports for communication.
         The code delegates to the app object, which is an express object, and that is to handle routing of the http communication to appropriate handling code. Lastly, this file handles communication with the sequelize library,
