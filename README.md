@@ -1,4 +1,4 @@
-# pumpApp
+# Pump Application
 Purpose:
     This application is meant to control pumps that are connected to a rasberry pi via serial communication. Also, there is a servo motor that is being controlled via rasberry pi pins. The end user
     Should be able to dictate flow rate as well as syringe diameter, via a ui that is communicating with a server that is then delegating the commands to the appropriate channel for the pumps.
