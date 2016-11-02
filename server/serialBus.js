@@ -1,6 +1,6 @@
 var http = require('http');
 var models  = require('./models');
-var io = require('socket.io').listen(http.createServer().listen(8080));
+var io = require('socket.io').listen(http.createServer().listen(8090));
 //var raspi = require('raspi-io');
 var five = require('johnny-five');
 var serialPort = require('serialport');

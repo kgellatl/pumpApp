@@ -1,4 +1,4 @@
-var socket = io.connect('http://localhost:8080');
+var socket = io.connect('http://192.168.0.102:8090');
 
 socket.on('accVolReading', function (data) {
     var pumpName = data.pumpName;
