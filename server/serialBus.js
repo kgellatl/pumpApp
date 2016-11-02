@@ -14,9 +14,7 @@ var serialBus = {};
 var activePumps;
 
 //init port
-var port = new serialPort('/dev/ttyUSB0',{
-    parser: serialPort.parsers.readline('\r')
-});
+var port = new serialPort('/dev/ttyUSB0');
 
 serialBus.initialize = function() {
 //initialize servo motor
@@ -33,6 +31,7 @@ serialBus.initialize = function() {
                 function (data) {
                     charString = bufferToCharString(data);
                     if(charString.length>1) {
+                        responseString = charString.join("").split(" ");
                         if (charString.length == 17) {
                             driverCode = "" + charString[14] + charString[15];
                             pump = activePumps.filter(function (element) {
@@ -93,7 +92,7 @@ serialBus.initialize = function() {
                     }
                 );
             });
-    },60000);
+    },20000);
 }
 
 var bufferToCharString = function(data){
