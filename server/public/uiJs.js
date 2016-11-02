@@ -39,10 +39,8 @@ $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
     <!--   toggle switch action code goes here -->
     var pumpName = this.name;
     if ($(this).bootstrapSwitch('state')) {
-        $('#' + pumpName + 'Rate').attr("disabled",true);
         $.post('pumps/run/' + pumpName);
     } else {
-        $('#' + pumpName + 'Rate').attr("disabled",false);
         $.post('pumps/stop/' + pumpName);
     }
 

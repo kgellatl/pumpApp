@@ -14,7 +14,9 @@ var serialBus = {};
 var activePumps;
 
 //init port
-var port = new serialPort('/dev/ttyUSB0');
+var port = new serialPort('/dev/ttyUSB0',{
+    parser: serialPort.parsers.readline('\r')
+});
 
 serialBus.initialize = function() {
 //initialize servo motor
