@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "admin": "node ./server/bin/www admin",
-    "start": "node ./server/bin/www"
+    "start": "node ./server/bin/www",
+    "debug": "node --debug-brk ./server/bin/www admin"
   },
   "dependencies": {
     "body-parser": "~1.15.1",
