@@ -31,20 +31,18 @@ serialBus.initialize = function() {
                 function (data) {
                     charString = bufferToCharString(data);
                     if(charString.length>1) {
-                        responseString = charString.join("").split("\r");
-                        if (charString.length == 17) {
-                            driverCode = "" + charString[14] + charString[15];
+                            driverCode = charString[1].replace(/\D/g,'');
+
                             pump = activePumps.filter(function (element) {
                                 if (element.driver_code == driverCode)return true
                             })[0];
-                            accVol = charString.slice(1, 9).reduce((prev, curr) => prev + curr, "").trim();
+
+                            accVol = charString[0].trim();
                             pumpName = pump.pump_name;
-                            units = charString.slice(10, 12).reduce((prev, curr) => prev + curr, "");
 
                             socket.emit("accVolReading", {
                                 accVol: accVol,
                                 pumpName: pumpName,
-                                units: units
                             });
 
                             socket.emit("pumpStatus", {
@@ -52,7 +50,7 @@ serialBus.initialize = function() {
                                 status: statusTranslation(charString.slice(16, 1))
                             });
                         }
-                    }
+                    });
                 }
             );
 
@@ -105,7 +103,7 @@ var bufferToCharString = function(data){
             counter++;
             runningString="";
         }
-        if(data[i]!=13) {
+        if(data[i]!=13 && data[i]!=10) {
             runningString += String.fromCharCode(data[i]);
         }
     }

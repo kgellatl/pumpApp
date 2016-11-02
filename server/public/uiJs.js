@@ -4,7 +4,7 @@ socket.on('accVolReading', function (data) {
     var pumpName = data.pumpName;
     var accVol = data.accVol;
     var units = data.units;
-    $('#' + pumpName + 'accVol').val("" + accVol + " " + units);
+    $('#' + pumpName + 'accVol').val(accVol);
 });
 
 $('.BSswitch').bootstrapSwitch('state', false);
