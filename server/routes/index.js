@@ -95,6 +95,7 @@ router.post('/pumps/run/:name',function(req,res,next){
     pumpTable.findAll({where: {pump_name: pumpName}})
         .then(function(pump){
             pump = pump[0];
+            pump.updateAttributes({isRunning:true});
             var output = pump.driver_code + "RUN\r";
             serialBus.write(output);
             res.end();
@@ -107,7 +108,7 @@ router.post('/pumps/stop/:name',function(req,res,next){
         .then(function(pump){
             //use pump DriverCode to tell pump to stop
             pump = pump[0];
-            pump.updateAttributes({current_rate: 0});
+            pump.updateAttributes({current_rate: 0,isRunning:false});
             var output = pump.driver_code + "STP\r";
             serialBus.write(output);
             res.end();
