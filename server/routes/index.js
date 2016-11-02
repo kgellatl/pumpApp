@@ -113,11 +113,7 @@ router.post('/pumps/run/:name',function(req,res,next){
         .then(function(pump){
             pump = pump[0];
             var output = pump.driver_code + "RUN\r";
-            var syringeQuery= pump.driver_code + "RAT\r";
-            var syringeDia = pump.driver_code + "DIA\r";
             serialBus.write(output);
-            serialBus.write(syringeDia);
-            serialBus.write(syringeQuery);
             res.end();
         })
 })

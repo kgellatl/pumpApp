@@ -1,7 +1,7 @@
 var http = require('http');
 var models  = require('./models');
-var io = require('socket.io').listen(http.createServer().listen(8090));
-var raspi = require('raspi-io');
+var socket = require('socket.socket').listen(http.createServer().listen(8090));
+var raspi = require('raspi-socket');
 var five = require('johnny-five');
 var serialPort = require('serialport');
 
@@ -29,7 +29,7 @@ serialBus.initialize = function() {
             }
         });
 
-        io.on('motorChange', function (data) {
+        socket.on('motorChange', function (data) {
             var rate = data.rate;
             var motorFract = data.rate / 100.0;
             if (motorFract == 0.0) {
@@ -41,7 +41,7 @@ serialBus.initialize = function() {
         })
     });
 
-    io.on('connection', function (socket) {
+    socket.on('connection', function (socket) {
         port.on('data',
             function (data) {
                 charString = bufferToCharString(data);
@@ -82,7 +82,11 @@ serialBus.initialize = function() {
                 pumps.forEach(
                     (pump) => {
                     var output = pump.dataValues.driver_code + "VOL\r";
+                    var syringeQuery= pump.driver_code + "RAT\r";
+                    var syringeDia = pump.driver_code + "DIA\r";
                     port.write(output);
+                    port.write(syringeDia);
+                    port.write(syringeQuery);
                     }
                 )
                 ;

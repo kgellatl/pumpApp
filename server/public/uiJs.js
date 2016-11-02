@@ -56,7 +56,6 @@ $('.diamChange').on('keypress', function (e) {
         var pumpName = this.name;
         var diam = $(this).val();
         $.post("pumps/updateSyringe",{pumpName:pumpName,syringeDiam:diam});
-        location.reload();
     }
 });
 
@@ -66,7 +65,6 @@ $('.rateChange').on('keypress', function (e) {
         var pumpName = this.name;
         var rate = $(this).val();
         $.post("pumps/updateRate",{pumpName:pumpName,rate:rate});
-        location.reload();
     }
 });
 
