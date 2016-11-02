@@ -36,11 +36,11 @@ serialBus.initialize = function() {
                             pump = activePumps.filter(function (element) {
                                 if (element.driver_code == driverCode)return true
                             })[0];
-                            accVol = charString.slice(1, 9).reduce((prev, curr) = > prev + curr, ""
+                            accVol = charString.slice(1, 9).reduce((prev, curr) => prev + curr, ""
                         ).
                             trim();
                             pumpName = pump.pump_name;
-                            units = charString.slice(10, 12).reduce((prev, curr) = > prev + curr, ""
+                            units = charString.slice(10, 12).reduce((prev, curr) => prev + curr, ""
                         )
                             ;
                             socket.emit("accVolReading", {
