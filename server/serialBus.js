@@ -105,7 +105,9 @@ var bufferToCharString = function(data){
             counter++;
             runningString="";
         }
-        runningString+=String.fromCharCode(data[i]);
+        if(data[i]!=13) {
+            runningString += String.fromCharCode(data[i]);
+        }
     }
     return myCharString;
 }
