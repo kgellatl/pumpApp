@@ -65,7 +65,7 @@ serialBus.initialize = function() {
                 motor1.start(rate);
             })
         });
-    });
+    };
 
     function statusTranslation(input){
         switch(input){
