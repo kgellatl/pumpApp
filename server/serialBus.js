@@ -29,7 +29,7 @@ serialBus.initialize = function() {
         socket.on('connection', function (socket) {
             port.on('data',
                 function (data) {
-                    charString = bufferToCharString(data);
+                    charString = bufferToArrayOfStrings(data);
                     if(charString.length>1) {
                         responseString = charString.join("")
                         responseString = responseString.split("\r");
@@ -96,7 +96,7 @@ serialBus.initialize = function() {
     },20000);
 }
 
-bufferToArrayOfStrings = functoin(data){
+var bufferToArrayOfStrings = function(data){
     var stringArray = data.split(13);
     stringArray.forEach(function(string){bufferToCharString(string)});
     return stringArray;
