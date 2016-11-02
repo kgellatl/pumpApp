@@ -79,7 +79,7 @@ serialBus.initialize = function() {
     setInterval(function () {
         pumpTable.findAll({where: {current_rate: {$gt: 0}}})
             .then(function (pumps) {
-                pump.forEach(
+                pumps.forEach(
                     (pump) => {
                     var output = pump.dataValues.driver_code + "VOL\r";
                     port.write(output);
