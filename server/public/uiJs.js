@@ -40,24 +40,14 @@ $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
     var pumpName = this.name;
     if ($(this).bootstrapSwitch('state')) {
         $('#' + pumpName + 'Rate').attr("disabled",true);
-        $('#' + pumpName + 'Syringe').attr("disabled",true);
         $.post('pumps/run/' + pumpName);
     } else {
         $('#' + pumpName + 'Rate').attr("disabled",false);
-        $('#' + pumpName + 'Syringe').attr("disabled",false);
         $.post('pumps/stop/' + pumpName);
     }
 
 });
 
-<!-- form-control handler -->
-$('.diamChange').on('keypress', function (e) {
-    if (e.which == 13) {   <!-- Enter key -->
-        var pumpName = this.name;
-        var diam = $(this).val();
-        $.post("pumps/updateSyringe",{pumpName:pumpName,syringeDiam:diam});
-    }
-});
 
 <!-- form-control handler -->
 $('.rateChange').on('keypress', function (e) {

@@ -17,11 +17,10 @@ pumpTable.findAll().then(function (pumps) {
     pumps.forEach(function (pump){
         var output = pump.driver_code + "ULH " + pump.default_rate + "\r";
         serialBus.write(output);
-        setTimeout("",30000);
+        setTimeout("",10000);
         var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
         serialBus.write(output);
-        setTimeout("",30000);
-        pump.updateAttributes({current_rate: pump.default_rate});
+        setTimeout("",10000);
     })
 });
 
@@ -56,21 +55,6 @@ router.post('/pumps/volClear',function(req,res,next){
         });
 });
 
-router.post('/pumps/updateSyringe',function(req,res,next){
-    var pumpName = req.body.pumpName;
-    var syringeDiam = req.body.syringeDiam;
-    pumpTable.findAll({where: {pump_name:pumpName}})
-        .then(function(pumps){
-            if(pumps) {
-                var pump = pumps[0];
-                pump.update({syringe_diam: syringeDiam}).then(function () {
-                    var output = pump.driver_code + "MMD " + syringeDiam + "\r";
-                    serialBus.write(output);
-                    res.end();
-                });
-            }
-        })
-});
 
 router.post('/pumps/updateRate',function(req,res,next){
     var pumpName = req.body.pumpName;
@@ -79,11 +63,9 @@ router.post('/pumps/updateRate',function(req,res,next){
         .then(function(pumps){
             if(pumps) {
                 var pump = pumps[0];
-                pump.update({current_rate: rate}).then(function () {
-                    var output = pump.driver_code + "ULH " + rate + "\r";
-                    serialBus.write(output);
-                    res.end();
-                });
+                var output = pump.driver_code + "ULH " + rate + "\r";
+                serialBus.write(output);
+                res.end();
             }
         })
 });
@@ -108,7 +90,7 @@ router.post('/pumps/stop/:name',function(req,res,next){
         .then(function(pump){
             //use pump DriverCode to tell pump to stop
             pump = pump[0];
-            pump.updateAttributes({current_rate: 0,isRunning:false});
+            pump.updateAttributes({isRunning:false});
             var output = pump.driver_code + "STP\r";
             serialBus.write(output);
             res.end();
@@ -125,7 +107,6 @@ router.post('/modes/run/:name',function(req,res,next){
             pumpModeRates.forEach(
                 (element) => {
                 pumpTable.findAll({where: {pump_name: element.pumpPumpName}}).then(function (pump) {
-                pump[0].updateAttributes({current_rate: element.rate})
                 var output = pump[0].driver_code + "RUN\r";
                 serialBus.write(output);
             });

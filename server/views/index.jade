@@ -19,7 +19,7 @@ block content
                         td Diam(mm)
                         each pump in pumps
                             td
-                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name=pump.pump_name value= pump.syringe_diam)
+                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name=pump.pump_name value= pump.syringe_diam,disabled)
                     tr
                         td Rate (ul/L)
                         each pump in pumps

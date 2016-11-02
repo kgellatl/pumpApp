@@ -8,7 +8,6 @@ module.exports = function(sequelize, DataTypes) {
         allowNull:false
     },
     driver_code: {type: DataTypes.STRING,unique:true},
-    current_rate: DataTypes.FLOAT,
     syringe_diam: DataTypes.FLOAT,
     default_rate: { type: DataTypes.FLOAT,defaultValue:50 },
     isRunning: {type:DataTypes.BOOLEAN,defaultValue:false}
