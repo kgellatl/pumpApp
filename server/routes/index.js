@@ -21,7 +21,8 @@ pumpTable.findAll().then(function (pumps) {
         setTimeout("",60000);
         pump.updateAttributes({current_rate: pump.default_rate});
     })
-}
+});
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
     setTimeout(function() {
