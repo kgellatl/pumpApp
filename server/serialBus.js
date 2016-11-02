@@ -29,10 +29,9 @@ serialBus.initialize = function() {
         socket.on('connection', function (socket) {
             port.on('data',
                 function (data) {
-                    charString = bufferToArrayOfStrings(data);
+                    charString = bufferToCharString(data);
                     if(charString.length>1) {
-                        responseString = charString.join("")
-                        responseString = responseString.split("\r");
+                        responseString = charString.join("").split("\r");
                         if (charString.length == 17) {
                             driverCode = "" + charString[14] + charString[15];
                             pump = activePumps.filter(function (element) {
@@ -96,15 +95,17 @@ serialBus.initialize = function() {
     },20000);
 }
 
-var bufferToArrayOfStrings = function(data){
-    var stringArray = data.split(13);
-    stringArray.forEach(function(string){bufferToCharString(string)});
-    return stringArray;
-}
 var bufferToCharString = function(data){
     var myCharString = new Array();
+    var counter = 0;
+    var runningString = "";
     for (var i=0;i<data.length; i++){
-        myCharString[i] = String.fromCharCode(data[i]);
+        if(data[i]==13 && i!=0){
+            myCharString[counter]=runningString;
+            counter++;
+            runningString="";
+        }
+        runningString+=String.fromCharCode(data[i]);
     }
     return myCharString;
 }
