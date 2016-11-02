@@ -23,12 +23,7 @@ serialBus.initialize = function() {
 
     board.on('ready', function () {
 
-        var motor1 = new five.Motor({
-            pins: {
-                pwm: "P1-12"
-            }
-        });
-
+        var motor1 = new five.Motor(1);
 
         socket.on('connection', function (socket) {
             port.on('data',
@@ -92,7 +87,7 @@ serialBus.initialize = function() {
                 )
                 ;
             });
-    }, 60, 000);
+    },20000);
 }
 
 var bufferToCharString = function(data){
