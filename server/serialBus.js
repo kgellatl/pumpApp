@@ -30,22 +30,30 @@ serialBus.initialize = function() {
             port.on('data',
                 function (data) {
                     charString = bufferToCharString(data);
-                    if (charString.length == 17) {
-                        driverCode = "" + charString[14] + charString[15];
-                        pump = activePumps.filter( function(element){ if(element.driver_code==driverCode)return true})[0];
-                        accVol = charString.slice(1, 9).reduce( (prev, curr) => prev + curr, "").trim();
-                        pumpName = pump.pump_name;
-                        units = charString.slice(10, 12).reduce( (prev, curr) => prev + curr, "");
-                        socket.emit("accVolReading", {
-                            accVol: accVol,
-                            pumpName: pumpName,
-                            units: units
-                        });
+                    if(charString.length>1) {
+                        if (charString.length == 17) {
+                            driverCode = "" + charString[14] + charString[15];
+                            pump = activePumps.filter(function (element) {
+                                if (element.driver_code == driverCode)return true
+                            })[0];
+                            accVol = charString.slice(1, 9).reduce((prev, curr) = > prev + curr, ""
+                        ).
+                            trim();
+                            pumpName = pump.pump_name;
+                            units = charString.slice(10, 12).reduce((prev, curr) = > prev + curr, ""
+                        )
+                            ;
+                            socket.emit("accVolReading", {
+                                accVol: accVol,
+                                pumpName: pumpName,
+                                units: units
+                            });
 
-                        socket.emit("pumpStatus",{
-                            pump:pump.pump_name,
-                            status:statusTranslation(charString.slice(16,1))
-                        });
+                            socket.emit("pumpStatus", {
+                                pump: pump.pump_name,
+                                status: statusTranslation(charString.slice(16, 1))
+                            });
+                        }
                     }
                 }
             );
@@ -76,20 +84,17 @@ serialBus.initialize = function() {
 
 //setup timer for calls to pumps that are currently active, so we can update acc vols
     setInterval(function () {
-        pumpTable.findAll({where: {current_rate: {$gt: 0}}})
+        pumpTable.findAll({where: {isRunning: {$eq: true}}})
             .then(function (pumps) {
                 activePumps = pumps;
                 pumps.forEach(
                     (pump) => {
-                    var output = pump.driver_code + "RAT\r";
-                    port.write(output);
-                    setTimeout("",60000);
-                    output = pump.driver_code + "DIA\r";
+                    var output = pump.driver_code + "VOL\r";
                     port.write(output);
                     }
                 );
             });
-    },100000);
+    },30000);
 }
 
 var bufferToCharString = function(data){
