@@ -109,6 +109,7 @@ var bufferToCharString = function(data){
             runningString += String.fromCharCode(data[i]);
         }
     }
+    myCharString.push(runningString);
     return myCharString;
 }
 
