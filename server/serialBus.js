@@ -29,13 +29,17 @@ serialBus.initialize = function() {
             port.on('data',
                 function (data) {
                     charString = bufferToCharString(data);
-                    if (charString.length == 16) {
-                        pumpTable.findAll({where: {driver_code: "" + charString[14] + charString[15]}})
+                    if (charString.length == 17) {
+                        driverCode = "" + charString[14] + charString[15];
+                        pumpTable.findAll({where: {driver_code: driverCode}})
                             .then(function (pump) {
+                                accVol = charString.slice(2, 7).reduce( (prev, curr) => prev + curr, "");
+                                pumpName = pump[0].pump_name;
+                                units = charString.slice(10, 2).reduce( (prev, curr) => prev + curr, "");
                                 socket.emit("accVolReading", {
-                                    accVol: charString.slice(2, 7).reduce( (prev, curr) => prev + curr, ""),
-                                    pumpName: pump[0].pump_name,
-                                    units: charString.slice(10, 2).reduce( (prev, curr) => prev + curr, "")
+                                    accVol: accVol,
+                                    pumpName: pumpName,
+                                    units: units
                             });
 
                                 socket.emit("pumpStatus",{
