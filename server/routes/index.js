@@ -19,6 +19,7 @@ pumpTable.findAll().then(function (pumps) {
         setTimeout("",60000);
         var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
         setTimeout("",60000);
+        pump.updateAttributes({current_rate: pump.default_rate});
     })
 }
 /* GET home page. */
@@ -92,7 +93,6 @@ router.post('/pumps/run/:name',function(req,res,next){
         .then(function(pump){
             pump = pump[0];
             var output = pump.driver_code + "RUN\r";
-            pump.updateAttributes({current_rate: pump.default_rate});
             serialBus.write(output);
             res.end();
         })
