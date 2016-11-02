@@ -34,11 +34,13 @@ router.get('/', function(req, res, next) {
 
 router.post('/pumps/volClear',function(req,res,next){
     pumpTable.findAll({where: {pump_name:pumpName}})
-        .then(function(pump){
-            pump = pump[0];
-            var output = pump.driver_code + "CLV\r";
-            serialBus.write(output);
-            res.end();
+        .then(function(pumps){
+            if(pumps) {
+                pump = pump[0];
+                var output = pump.driver_code + "CLV\r";
+                serialBus.write(output);
+                res.end();
+            }
         });
 });
 
@@ -46,13 +48,15 @@ router.post('/pumps/updateSyringe',function(req,res,next){
     var pumpName = req.body.pumpName;
     var syringeDiam = req.body.syringeDiam;
     pumpTable.findAll({where: {pump_name:pumpName}})
-        .then(function(pump){
-            var pump = pump[0];
-            pump.update({syringe_diam:syringeDiam}).then(function() {
-                var output = pump.driver_code + "MMD " + syringeDiam + "\r";
-                serialBus.write(output);
-                res.end();
-            });
+        .then(function(pumps){
+            if(pumps) {
+                var pump = pump[0];
+                pump.update({syringe_diam: syringeDiam}).then(function () {
+                    var output = pump.driver_code + "MMD " + syringeDiam + "\r";
+                    serialBus.write(output);
+                    res.end();
+                });
+            }
         })
 });
 
@@ -60,12 +64,15 @@ router.post('/pumps/updateRate',function(req,res,next){
     var pumpName = req.body.pumpName;
     var rate = parseFloat(req.body.rate).toFixed(3);
     pumpTable.findAll({where: {pump_name:pumpName}})
-        .then(function(pump){
-            var pump = pump[0];
-            pump.updateAttributes({current_rate:rate});
-            var output = pump.driver_code + "ULH " + rate + "\r";
-            serialBus.write(output);
-            res.end();
+        .then(function(pumps){
+            if(pumps) {
+                var pump = pump[0];
+                pump.update({current_rate: rate}).then(function () {
+                    var output = pump.driver_code + "ULH " + rate + "\r";
+                    serialBus.write(output);
+                    res.end();
+                });
+            }
         })
 });
 
