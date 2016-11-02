@@ -29,7 +29,7 @@ serialBus.initialize = function() {
             }
         });
 
-        socket.on('motorChange', function (data) {
+        io.on('motorChange', function (data) {
             var rate = data.rate;
             var motorFract = data.rate / 100.0;
             if (motorFract == 0.0) {
