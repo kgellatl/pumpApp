@@ -27,10 +27,10 @@ serialBus.initialize = function() {
         var motor1 = new five.Motor(1);
 
         socket.on('connection', function (socket) {
-            port.on('data',
-                function (data) {
-                    charString = bufferToCharString(data);
-                    if(charString.length>1) {
+                port.on('data',
+                    function (data) {
+                        charString = bufferToCharString(data);
+                        if(charString.length>1) {
                             driverCode = charString[1].replace(/\D/g,'');
 
                             pump = activePumps.filter(function (element) {
@@ -51,21 +51,20 @@ serialBus.initialize = function() {
                             });
                         }
                     });
-                }
-            );
+            }
+        );
 
-            socket.on('motorChange', function (data) {
-                var rate = data.rate;
-                var motorFract = data.rate / 100.0;
-                if (motorFract == 0.0) {
-                    rate = 0;
-                } else {
-                    rate = motorFract * (1023 - 300) + 300;
-                }
-                motor1.start(rate);
-            })
-        });
-    };
+        socket.on('motorChange', function (data) {
+            var rate = data.rate;
+            var motorFract = data.rate / 100.0;
+            if (motorFract == 0.0) {
+                rate = 0;
+            } else {
+                rate = motorFract * (1023 - 300) + 300;
+            }
+            motor1.start(rate);
+        })
+    });
 
     function statusTranslation(input){
         switch(input){
@@ -86,8 +85,8 @@ serialBus.initialize = function() {
                 pumps.forEach(
                     (pump) => {
                     var output = pump.driver_code + "VOL\r";
-                    port.write(output);
-                    }
+                port.write(output);
+            }
                 );
             });
     },20000);
