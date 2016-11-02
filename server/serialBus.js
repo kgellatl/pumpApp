@@ -31,7 +31,7 @@ serialBus.initialize = function() {
                 function (data) {
                     charString = bufferToCharString(data);
                     if(charString.length>1) {
-                        responseString = charString.join("").split(" ");
+                        responseString = charString.join("").split("\r");
                         if (charString.length == 17) {
                             driverCode = "" + charString[14] + charString[15];
                             pump = activePumps.filter(function (element) {
