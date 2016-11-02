@@ -11,6 +11,7 @@ var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
 
 var serialBus = {};
+var activePumps;
 
 //init port
 var port = new serialPort('/dev/ttyUSB0');
@@ -31,22 +32,20 @@ serialBus.initialize = function() {
                     charString = bufferToCharString(data);
                     if (charString.length == 17) {
                         driverCode = "" + charString[14] + charString[15];
-                        pumpTable.findAll({where: {driver_code: driverCode}})
-                            .then(function (pump) {
-                                accVol = charString.slice(2, 7).reduce( (prev, curr) => prev + curr, "");
-                                pumpName = pump[0].pump_name;
-                                units = charString.slice(10, 2).reduce( (prev, curr) => prev + curr, "");
-                                socket.emit("accVolReading", {
-                                    accVol: accVol,
-                                    pumpName: pumpName,
-                                    units: units
-                            });
+                        pump = activePumps.filter( function(element){ if(element.driver_code==driverCode)return true})[0];
+                        accVol = charString.slice(2, 7).reduce( (prev, curr) => prev + curr, "");
+                        pumpName = pump.pump_name;
+                        units = charString.slice(10, 2).reduce( (prev, curr) => prev + curr, "");
+                        socket.emit("accVolReading", {
+                            accVol: accVol,
+                            pumpName: pumpName,
+                            units: units
+                        });
 
-                                socket.emit("pumpStatus",{
-                                    pump:pump[0].pump_name,
-                                    status:statusTranslation(charString.slice(16,1))
-                                });
-                            });
+                        socket.emit("pumpStatus",{
+                            pump:pump.pump_name,
+                            status:statusTranslation(charString.slice(16,1))
+                        });
                     }
                 }
             );
@@ -79,15 +78,16 @@ serialBus.initialize = function() {
     setInterval(function () {
         pumpTable.findAll({where: {current_rate: {$gt: 0}}})
             .then(function (pumps) {
+                activePumps = pumps;
                 pumps.forEach(
                     (pump) => {
                     var output = pump.dataValues.driver_code + "VOL\r";
-                    var syringeQuery= pump.driver_code + "RAT\r";
-                    var syringeDia = pump.driver_code + "DIA\r";
-                    port.write(output);
-                    port.write(syringeDia);
-                    port.write(syringeQuery);
-                    }
+                var syringeQuery= pump.driver_code + "RAT\r";
+                var syringeDia = pump.driver_code + "DIA\r";
+                port.write(output);
+                port.write(syringeDia);
+                port.write(syringeQuery);
+            }
                 )
                 ;
             });
