@@ -92,7 +92,7 @@ serialBus.initialize = function() {
                 )
                 ;
             });
-    }, 20, 000);
+    }, 60, 000);
 }
 
 var bufferToCharString = function(data){
