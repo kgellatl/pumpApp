@@ -16,8 +16,10 @@ process.on('uncaughtException', (err) => {
 pumpTable.findAll().then(function (pumps) {
     pumps.forEach(function (pump){
         var output = pump.driver_code + "ULH " + pump.default_rate + "\r";
+        serialBus.write(output);
         setTimeout("",60000);
         var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
+        serialBus.write(output);
         setTimeout("",60000);
         pump.updateAttributes({current_rate: pump.default_rate});
     })
