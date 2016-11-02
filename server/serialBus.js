@@ -1,6 +1,6 @@
 var http = require('http');
 var models  = require('./models');
-var socket = require('socket.socket').listen(http.createServer().listen(8090));
+var socket = require('socket.io').listen(http.createServer().listen(8090));
 var raspi = require('raspi-socket');
 var five = require('johnny-five');
 var serialPort = require('serialport');
@@ -91,7 +91,7 @@ serialBus.initialize = function() {
                 )
                 ;
             });
-    }, 10, 000);
+    }, 20, 000);
 }
 
 var bufferToCharString = function(data){
