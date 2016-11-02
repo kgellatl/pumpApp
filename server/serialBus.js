@@ -14,9 +14,7 @@ var serialBus = {};
 var activePumps;
 
 //init port
-var port = new serialPort('/dev/ttyUSB0', {
-    parser: serialPort.parsers.readline('\r\n')
-});
+var port = new serialPort('/dev/ttyUSB0');
 
 serialBus.initialize = function() {
 //initialize servo motor
@@ -99,12 +97,21 @@ serialBus.initialize = function() {
 
 var bufferToCharString = function(data){
     var myCharString = new Array();
+    var counter = 0;
+    var runningString = "";
     for (var i=0;i<data.length; i++){
-        myCharString[i] = String.fromCharCode(data[i]);
+        if(data[i]==13 && i!=0){
+            myCharString[counter]=runningString;
+            counter++;
+            runningString="";
+        }
+        if(data[i]!=13) {
+            runningString += String.fromCharCode(data[i]);
+        }
     }
+    myCharString.push(runningString);
     return myCharString;
 }
-
 
 serialBus.write = function (data){
     port.write(data);
