@@ -99,8 +99,7 @@ var bufferToCharString = function(data){
 }
 
 serialBus.write = function (data){
-    console.log(data);
-    //port.write(data);
+    port.write(data);
 }
 module.exports = serialBus;
 
