@@ -7,6 +7,8 @@ var pumpTable = models.pump;
 var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
 
+serialBus.initialize();
+
 process.on('uncaughtException', (err) => {
     console.log(err);
 });
