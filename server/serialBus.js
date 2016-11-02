@@ -29,39 +29,40 @@ serialBus.initialize = function() {
             }
         });
 
-        socket.on('motorChange', function (data) {
-            var rate = data.rate;
-            var motorFract = data.rate / 100.0;
-            if (motorFract == 0.0) {
-                rate = 0;
-            } else {
-                rate = motorFract * (1023 - 300) + 300;
-            }
-            motor1.start(rate);
-        })
-    });
 
-    socket.on('connection', function (socket) {
-        port.on('data',
-            function (data) {
-                charString = bufferToCharString(data);
-                if (charString.length == 16) {
-                    pumpTable.findAll({where: {driver_code: "" + charString[14] + charString[15]}})
-                        .then(function (pump) {
-                            socket.emit("accVolReading", {
-                                accVol: charString.slice(2, 7).reduce( (prev, curr) => prev + curr, ""),
-                                pumpName: pump[0].pump_name,
-                                units: charString.slice(10, 2).reduce( (prev, curr) => prev + curr, "")
-                        });
-
-                            socket.emit("pumpStatus",{
-                                pump:pump[0].pump_name,
-                                status:statusTranslation(charString.slice(16,1))
+        socket.on('connection', function (socket) {
+            port.on('data',
+                function (data) {
+                    charString = bufferToCharString(data);
+                    if (charString.length == 16) {
+                        pumpTable.findAll({where: {driver_code: "" + charString[14] + charString[15]}})
+                            .then(function (pump) {
+                                socket.emit("accVolReading", {
+                                    accVol: charString.slice(2, 7).reduce( (prev, curr) => prev + curr, ""),
+                                    pumpName: pump[0].pump_name,
+                                    units: charString.slice(10, 2).reduce( (prev, curr) => prev + curr, "")
                             });
-                        });
+
+                                socket.emit("pumpStatus",{
+                                    pump:pump[0].pump_name,
+                                    status:statusTranslation(charString.slice(16,1))
+                                });
+                            });
+                    }
                 }
-            }
-        );
+            );
+
+            socket.on('motorChange', function (data) {
+                var rate = data.rate;
+                var motorFract = data.rate / 100.0;
+                if (motorFract == 0.0) {
+                    rate = 0;
+                } else {
+                    rate = motorFract * (1023 - 300) + 300;
+                }
+                motor1.start(rate);
+            })
+        });
     });
 
     function statusTranslation(input){
