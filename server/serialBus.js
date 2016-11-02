@@ -25,7 +25,7 @@ serialBus.initialize = function() {
 
         var motor1 = new five.Motor({
             pins: {
-                pwm: 1
+                pwm: "P1-12"
             }
         });
 
