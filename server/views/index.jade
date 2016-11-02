@@ -19,12 +19,12 @@ block content
                         td Diam(mm)
                         each pump in pumps
                             td
-                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name=pump.pump_name value= pump.syringe_diam,disabled)
+                                input.diamChange.form-control(id = pump.pump_name + 'Syringe' name=pump.pump_name value= pump.syringe_diam)
                     tr
                         td Rate (ul/L)
                         each pump in pumps
                             td
-                                input.rateChange.form-control(id= pump.pump_name + 'Rate', name = pump.pump_name, type='text', value=pump.current_rate,disabled)
+                                input.rateChange.form-control(id= pump.pump_name + 'Rate', name = pump.pump_name, type='text', value=pump.default_rate)
                     tr
                         td Acc Vol
                         each pump in pumps
@@ -81,6 +81,12 @@ block content
                 div.input-group
                     span.input-group-addon Driver Code
                     input(type='text',name='driverCode').form-control
+                div.input-group
+                    span.input-group-addon Syringe Diameter
+                    input(type='text',name='syringeDiam').form-control
+                div.input-group
+                    span.input-group-addon Default Rate
+                    input(type='text',name='defaultRate').form-control
                 div.col-xs-10.text-center
                     input(type='submit', value='Add New Pump')
     td(style=displayForAdmin)

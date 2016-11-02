@@ -39,12 +39,12 @@ $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
     <!--   toggle switch action code goes here -->
     var pumpName = this.name;
     if ($(this).bootstrapSwitch('state')) {
-        $('#' + pumpName + 'Rate').attr("disabled",false);
-        $('#' + pumpName + 'Syringe').attr("disabled",false);
-        $.post('pumps/run/' + pumpName);
-    } else {
         $('#' + pumpName + 'Rate').attr("disabled",true);
         $('#' + pumpName + 'Syringe').attr("disabled",true);
+        $.post('pumps/run/' + pumpName);
+    } else {
+        $('#' + pumpName + 'Rate').attr("disabled",false);
+        $('#' + pumpName + 'Syringe').attr("disabled",false);
         $.post('pumps/stop/' + pumpName);
     }
 
@@ -104,7 +104,9 @@ $('#pumpAdditionForm').submit(function(event){
     event.preventDefault();
     var driverCode = $(this).find('input[name=driverCode]').val()
     var pumpName = $(this).find('input[name=pumpName]').val()
-    $.post("pumps/add",{pump_name: pumpName, driver_code: driverCode})
+    var defaultRate = $(this).find('input[name=defaultRate]').val()
+    var syringeDiam = $(this).find('input[name=syringeDiam]').val()
+    $.post("pumps/add",{pump_name: pumpName, driver_code: driverCode, syringe_diam:syringeDiam,default_rate:defaultRate})
     location.reload();
 });
 $('.pumpDelete').on('click',function(){

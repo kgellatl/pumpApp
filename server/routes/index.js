@@ -13,6 +13,14 @@ process.on('uncaughtException', (err) => {
     console.log(err);
 });
 
+pumpTable.findAll().then(function (pumps) {
+    pumps.forEach(function (pump){
+        var output = pump.driver_code + "ULH " + pump.default_rate + "\r";
+        setTimeout("",60000);
+        var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
+        setTimeout("",60000);
+    })
+}
 /* GET home page. */
 router.get('/', function(req, res, next) {
     setTimeout(function() {
@@ -76,42 +84,6 @@ router.post('/pumps/updateRate',function(req,res,next){
         })
 });
 
-/*
- router.post('/pumps/runAll',function(req,res,next){
- pumpTable.findAll()
- .then(function(pumps){
- pumps.forEach(
- (element) => {
- element.updateAttributes({current_rate: element.default_rate});
- var output = element.driver_code + "RUN\r";
- serialBus.write(output);
- res.end();
- }
- );
- });
- })
-
- router.post('/pumps/stopAll',function(req,res,next){
- var pumpsToStop;
- //find pumps that are on and update thier curRate to 0
- pumpTable.findAll({where: {current_rate: {$gt: 0}}})
- .then(function(pumps){
- if(pumps){
- pumpsToStop = pumps;
- pumps.forEach(
- (element) => {
- element.updateAttributes({current_rate: 0});
- var output = element.driver_code + "STP\r";
- serialBus.write(output);
- res.end();
- }
- );
- }
- });
- });
- */
-
-
 router.post('/pumps/run/:name',function(req,res,next){
     //need to decide how to tell it what speed 
     var pumpName = req.params.name;
@@ -120,6 +92,7 @@ router.post('/pumps/run/:name',function(req,res,next){
         .then(function(pump){
             pump = pump[0];
             var output = pump.driver_code + "RUN\r";
+            pump.updateAttributes({current_rate: pump.default_rate});
             serialBus.write(output);
             res.end();
         })
@@ -189,7 +162,7 @@ router.post('/modes/delete',function(req,res,next){
 });
 
 router.post('/pumps/add',function(req,res,next){
-    pumpTable.create({pump_name: req.body.pump_name, driver_code: req.body.driver_code})
+    pumpTable.create({pump_name: req.body.pump_name, driver_code: req.body.driver_code, syringe_diam:req.body.syringe_diam,default_rate: req.body.default_rate})
         .then(function(pump) {
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify(pump));

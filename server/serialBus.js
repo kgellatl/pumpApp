@@ -33,9 +33,9 @@ serialBus.initialize = function() {
                     if (charString.length == 17) {
                         driverCode = "" + charString[14] + charString[15];
                         pump = activePumps.filter( function(element){ if(element.driver_code==driverCode)return true})[0];
-                        accVol = charString.slice(1, 8).reduce( (prev, curr) => prev + curr, "").trim();
+                        accVol = charString.slice(1, 9).reduce( (prev, curr) => prev + curr, "").trim();
                         pumpName = pump.pump_name;
-                        units = charString.slice(10, 11).reduce( (prev, curr) => prev + curr, "");
+                        units = charString.slice(10, 12).reduce( (prev, curr) => prev + curr, "");
                         socket.emit("accVolReading", {
                             accVol: accVol,
                             pumpName: pumpName,
@@ -81,12 +81,15 @@ serialBus.initialize = function() {
                 activePumps = pumps;
                 pumps.forEach(
                     (pump) => {
-                    var output = pump.dataValues.driver_code + "VOL\r";
+                    var output = pump.driver_code + "RAT\r";
+                    port.write(output);
+                    setTimeout("",60000);
+                    output = pump.driver_code + "DIA\r";
                     port.write(output);
                     }
                 );
             });
-    },20000);
+    },100000);
 }
 
 var bufferToCharString = function(data){
