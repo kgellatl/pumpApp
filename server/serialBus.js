@@ -43,6 +43,7 @@ serialBus.initialize = function() {
                  function (data) {
                  charString = bufferToCharString(data);
                  charString.forEach(function(element){console.log(element)});
+                 /*
                  if(charString.length>1) {
                  driverCode = charString[1].replace(/\D/g,'');
 
@@ -62,8 +63,9 @@ serialBus.initialize = function() {
                  pump: pump.pump_name,
                  status: statusTranslation(charString.slice(16, 1))
                  });
-                 */
+
                  }
+                 */
                  });
 
                 serialBus.socket=socket;
