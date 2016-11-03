@@ -22,10 +22,9 @@ pumpTable.findAll().then(function (pumps) {
         currVolAccumulation[pump.pump_name]["curVol"]=0.000;
         var output = pump.driver_code + "ULH " + pump.default_rate + "\r";
         serialBus.write(output);
-        setTimeout("",10000);
+        setTimeout("",30000);
         var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
         serialBus.write(output);
-        setTimeout("",10000);
     })
 });
 
@@ -63,7 +62,7 @@ router.get('/', function(req, res, next) {
 
 
 router.post('/pumps/volClear',function(req,res,next){
-    pumpTable.findAll({where: {pump_name:pumpName}})
+    pumpTable.findAll({where: {pump_name:req.body.pump_name})
         .then(function(pumps){
             if(pumps) {
                 pump = pumps[0];
