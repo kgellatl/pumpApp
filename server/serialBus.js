@@ -38,7 +38,7 @@ serialBus.initialize = function() {
                     }
                     motor1.start(rate);
                 })
-                /*
+
                  port.on('data',
                  function (data) {
                  charString = bufferToCharString(data);
@@ -51,7 +51,7 @@ serialBus.initialize = function() {
 
                  accVol = charString[0].trim();
                  pumpName = pump.pump_name;
-
+                 /*
                  socket.emit("accVolReading", {
                  accVol: accVol,
                  pumpName: pumpName,
@@ -61,9 +61,10 @@ serialBus.initialize = function() {
                  pump: pump.pump_name,
                  status: statusTranslation(charString.slice(16, 1))
                  });
+                 */
                  }
                  });
-                 */
+
                 serialBus.socket=socket;
             }
         );
