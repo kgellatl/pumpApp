@@ -26,7 +26,7 @@ block content
                             td
                                 input.rateChange.form-control(id= pump.pump_name + 'Rate', name = pump.pump_name, type='text', value=pump.default_rate)
                     tr
-                        td Acc Vol
+                        td Acc Vol(ul)
                         each pump in pumps
                             td
                                 input(id=pump.pump_name + "accVol" readonly).form-control

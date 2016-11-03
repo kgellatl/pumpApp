@@ -18,6 +18,7 @@ process.on('uncaughtException', (err) => {
 
 pumpTable.findAll().then(function (pumps) {
     pumps.forEach(function (pump){
+        currVolAccumulation[pump.pump_name]["curVol"]=0.000;
         var output = pump.driver_code + "ULH " + pump.default_rate + "\r";
         serialBus.write(output);
         setTimeout("",10000);
@@ -26,6 +27,20 @@ pumpTable.findAll().then(function (pumps) {
         setTimeout("",10000);
     })
 });
+
+setInterval(function () {
+    pumpTable.findAll({where: {isRunning: {$eq: true}}})
+        .then(function (pumps) {
+            pumps.forEach(
+                function(pump) {
+                    serialBus.socket.emit('accVolReading',{
+                        accVol: currVolAccumulation[pump.pump_name]["curVol"] + currVolAccumulation[pump.pump_name]["curRate"]*((new Date().getTime()-currVolAccumulation[pump.pump_name]["timeStamp"])/3600000),
+                        pumpName: pump.pump_name
+                    })
+                }
+            );
+        });
+},1000);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -51,7 +66,7 @@ router.post('/pumps/volClear',function(req,res,next){
         .then(function(pumps){
             if(pumps) {
                 pump = pumps[0];
-                currVolAccumulation[pump.pump_name]["curVol"]=0;
+                currVolAccumulation[pump.pump_name]["curVol"]=0.000;
                 currVolAccumulation[pump.pump_name]["timeStamp"] = new Date().getTime();
                 res.end();
             }
@@ -123,9 +138,9 @@ router.get('/modes/get/:name',function(req,res,next){
     pumpModeRateTable.findAll({where: {modeModeName: modeName}})
         .then(function(pumpModeRates){
             pumpModeRates.forEach(
-                (element) => {
+                function(element) {
                     response.push({pumpName:element.pumpPumpName,rate:element.rate});
-                 })
+                })
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify(response));
         });
