@@ -7,6 +7,9 @@ var pumpTable = models.pump;
 var modeTable = models.mode;
 var pumpModeRateTable = models.pump_mode_rate;
 
+
+var currVolAccumulation = {};
+
 serialBus.initialize();
 
 process.on('uncaughtException', (err) => {
@@ -48,8 +51,8 @@ router.post('/pumps/volClear',function(req,res,next){
         .then(function(pumps){
             if(pumps) {
                 pump = pumps[0];
-                var output = pump.driver_code + "CLV\r";
-                serialBus.write(output);
+                currVolAccumulation[pump.pump_name]["curVol"]=0;
+                currVolAccumulation[pump.pump_name]["timeStamp"] = new Date().getTime();
                 res.end();
             }
         });
@@ -64,6 +67,14 @@ router.post('/pumps/updateRate',function(req,res,next){
             if(pumps) {
                 var pump = pumps[0];
                 var output = pump.driver_code + "ULH " + rate + "\r";
+                if(currVolAccumulation[pump.pump_name]["isRunning"]==true) {
+                    var curTime = new Data().getTime();
+                    currVolAccumulation[pump.pump_name]["curVol"]+=(currVolAccumulation[pumpName]["curRate"]*((curTime-currVolAccumulation[pumpName]["timeStamp"])/3600000))
+                    currVolAccumulation[pump.pump_name]["timeStamp"] = curTime;
+                    currVolAccumulation[pump.pump_name]["curRate"] = rate;
+                }else{
+                    currVolAccumulation[pump.pump_name]["curRate"] = rate;
+                }
                 serialBus.write(output);
                 res.end();
             }
@@ -80,6 +91,11 @@ router.post('/pumps/run/:name',function(req,res,next){
             pump.updateAttributes({isRunning:true});
             var output = pump.driver_code + "RUN\r";
             serialBus.write(output);
+            currVolAccumulation[pump.pump_name]["isRunning"] = true;
+            currVolAccumulation[pump.pump_name]["timeStamp"] = new Date().getTime();
+            if(!currVolAccumulation[pump.pump_name]["curRate"]){
+                currVolAccumulation[pump.pump_name]["curRate"]=pump.default_rate;
+            }
             res.end();
         })
 })
@@ -93,25 +109,23 @@ router.post('/pumps/stop/:name',function(req,res,next){
             pump.updateAttributes({isRunning:false});
             var output = pump.driver_code + "STP\r";
             serialBus.write(output);
+            currVolAccumulation[pump.pump_name]["isRunning"]=false;
+            currVolAccumulation[pump.pump_name]["curVol"]+=(currVolAccumulation[pump.pump_name]["curRate"]*((new Date().getTime()-currVolAccumulation[pumpName]["timeStamp"])/3600000));
+            currVolAccumulation[pump.pump_name]["timeStamp"] = undefined;
             res.end();
         })
 })
 
-router.post('/modes/run/:name',function(req,res,next){
+router.get('/modes/get/:name',function(req,res,next){
     var modeName = req.params.name;
-    var response = {};
-    response.pumps = new Array();
+    var response = new Array();
 
     pumpModeRateTable.findAll({where: {modeModeName: modeName}})
         .then(function(pumpModeRates){
             pumpModeRates.forEach(
                 (element) => {
-                pumpTable.findAll({where: {pump_name: element.pumpPumpName}}).then(function (pump) {
-                var output = pump[0].driver_code + "RUN\r";
-                serialBus.write(output);
-            });
-            response.pumps.push({pumpName: element.pumpPumpName,rate:element.rate});
-        })
+                    response.push({pumpName:element.pumpPumpName,rate:element.rate});
+                 })
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify(response));
         });

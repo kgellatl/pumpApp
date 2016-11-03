@@ -1,6 +1,5 @@
 var http = require('http');
 var models  = require('./models');
-var socket = require('socket.io').listen(http.createServer().listen(8090));
 var raspi = require('raspi-io');
 var five = require('johnny-five');
 var serialPort = require('serialport');
@@ -77,19 +76,6 @@ serialBus.initialize = function() {
         }
     }
 
-//setup timer for calls to pumps that are currently active, so we can update acc vols
-    setInterval(function () {
-        pumpTable.findAll({where: {isRunning: {$eq: true}}})
-            .then(function (pumps) {
-                activePumps = pumps;
-                pumps.forEach(
-                    (pump) => {
-                    var output = pump.driver_code + "VOL\r";
-                port.write(output);
-            }
-                );
-            });
-    },10000);
 }
 
 var bufferToCharString = function(data){

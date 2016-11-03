@@ -1,11 +1,5 @@
 var socket = io.connect('http://192.168.0.102:8090');
 
-socket.on('accVolReading', function (data) {
-    var pumpName = data.pumpName;
-    var accVol = data.accVol;
-    var units = data.units;
-    $('#' + pumpName + 'accVol').val(accVol);
-});
 
 $('.BSswitch').bootstrapSwitch('state', false);
 
@@ -61,10 +55,12 @@ $('.radio').find("input").on('change', function() {
     if(this.checked) {
         $('.BSswitch ').bootstrapSwitch('state', false, false);
         var groupName = this.value;
-        $.post('modes/run/' + groupName, function (data) {
-            data.pumps.forEach(function (element) {
-                $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
-                $('#' + element.pumpName + 'Rate').val(element.rate);
+        $.get('modes/run/' + groupName, function (data) {
+            data.forEach(function (element) {
+                $.post("pumps/updateRate",{pumpName:element.pumpName,rate:element.rate}).done(function(data) {
+                    $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
+                    $('#' + element.pumpName + 'Rate').val(element.rate);
+                });
             })
         })
     }
