@@ -84,7 +84,7 @@ router.post('/pumps/updateRate',function(req,res,next){
                 var pump = pumps[0];
                 var output = pump.driver_code + "ULH " + rate + "\r";
                 if(currVolAccumulation[pump.pump_name]["isRunning"]==true) {
-                    var curTime = new Data().getTime();
+                    var curTime = new Date().getTime();
                     currVolAccumulation[pump.pump_name]["curVol"]+=(currVolAccumulation[pumpName]["curRate"]*((curTime-currVolAccumulation[pumpName]["timeStamp"])/3600000))
                     currVolAccumulation[pump.pump_name]["timeStamp"] = curTime;
                     currVolAccumulation[pump.pump_name]["curRate"] = rate;
