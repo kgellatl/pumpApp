@@ -42,6 +42,7 @@ serialBus.initialize = function() {
                  port.on('data',
                  function (data) {
                  charString = bufferToCharString(data);
+                 charString.forEach(function(element){console.log(element)});
                  if(charString.length>1) {
                  driverCode = charString[1].replace(/\D/g,'');
 
