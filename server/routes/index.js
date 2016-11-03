@@ -92,6 +92,7 @@ router.post('/pumps/updateRate',function(req,res,next){
                 }
                 serialBus.write(output);
 
+                setTimeout("",10000);
                 output = pump.driver_code + "RAT" + "\r";
                 serialBus.write(output);
                 res.end();
