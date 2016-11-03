@@ -61,7 +61,7 @@ $('.radio').find("input").on('change', function() {
     if(this.checked) {
         $('.BSswitch ').bootstrapSwitch('state', false, false);
         var groupName = this.value;
-        $.get('modes/run/' + groupName, function (data) {
+        $.get('modes/get/' + groupName, function (data) {
             data.forEach(function (element) {
                 $.post("pumps/updateRate",{pumpName:element.pumpName,rate:element.rate}).done(function(data) {
                     $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
