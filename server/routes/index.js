@@ -18,6 +18,7 @@ process.on('uncaughtException', (err) => {
 
 pumpTable.findAll().then(function (pumps) {
     pumps.forEach(function (pump){
+        currVolAccumulation[pump.pump_name] = {};
         currVolAccumulation[pump.pump_name]["curVol"]=0.000;
         var output = pump.driver_code + "ULH " + pump.default_rate + "\r";
         serialBus.write(output);

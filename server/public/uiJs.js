@@ -8,6 +8,12 @@ $('#switchCellPump').click(function(){
     $('.BSswitch[name=cells2]').bootstrapSwitch('toggleState');
 });
 
+socket.on('accVolReading', function (data) {
+    var pumpName = data.pumpName;
+    var accVol = data.accVol;
+    $('#' + pumpName + 'accVol').val(accVol);
+});
+
 $('#pauseResume').click(function () {
 
     if ($(this).text()=='Pause All') {
