@@ -62,7 +62,7 @@ router.get('/', function(req, res, next) {
 
 
 router.post('/pumps/volClear',function(req,res,next){
-    pumpTable.findAll({where: {pump_name:req.body.pump_name})
+    pumpTable.findAll({where: {pump_name:req.body.pump_name}})
         .then(function(pumps){
             if(pumps) {
                 pump = pumps[0];
