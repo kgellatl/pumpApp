@@ -30,12 +30,6 @@ serialBus.initialize = function() {
 
                 socket.on('motorChange', function (data) {
                     var rate = data.rate;
-                    var motorFract = data.rate / 100.0;
-                    if (motorFract == 0.0) {
-                        rate = 0;
-                    } else {
-                        rate = motorFract * (1023 - 300) + 300;
-                    }
                     motor1.start(rate);
                 })
 
