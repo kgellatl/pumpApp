@@ -65,8 +65,10 @@ $('.radio').find("input").on('change', function() {
             $.get('modes/get/' + groupName, function (data) {
                 data.forEach(function (element) {
                     $.post("pumps/updateRate", {pumpName: element.pumpName, rate: element.rate}).done(function (data) {
-                        $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
-                        $('#' + element.pumpName + 'Rate').val(element.rate);
+                        setTimeout(function() {
+                            $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
+                            $('#' + element.pumpName + 'Rate').val(element.rate);
+                        },3000);
                     });
                 })
             })
