@@ -10,12 +10,12 @@ var pumpModeRateTable = models.pump_mode_rate;
 
 var currVolAccumulation = {};
 
+//Initialize stirrer motor and serialPort
 serialBus.initialize();
 
-process.on('uncaughtException', (err) => {
-    console.log(err);
-});
-
+/*
+    On application startup, make sure to set the rate and syringe diameter for each pump, to the defaults that we have stored in db for said pumps. Also, we initialize the currVolume accumulation table.
+ */
 pumpTable.findAll().then(function (pumps) {
     pumps.forEach(function (pump){
         currVolAccumulation[pump.pump_name] = {};
@@ -28,6 +28,10 @@ pumpTable.findAll().then(function (pumps) {
     })
 });
 
+/*
+    Every second, we want to query the database tables for those pumps that are running, and then emit an event on the open tcp socket, with the running volume for said pumps. The UI on the other
+    side of that socket will then update the html with the data accordingly. Note: If this becomes too cumbersome for application, we can utilize volumeAccumulation table to find pumps that are running.
+ */
 setInterval(function () {
     pumpTable.findAll({where: {isRunning: {$eq: true}}})
         .then(function (pumps) {
@@ -42,7 +46,7 @@ setInterval(function () {
         });
 },1000);
 
-/* GET home page. */
+/* GET home page. This Returns the html page with all the data required for the jade template; that includes the pumps,modes,pumpModeRates (for run modes) and finally the flag for displaying admin functionality or not*/
 router.get('/', function(req, res, next) {
     setTimeout(function() {
         pumpTable.findAll().then(function (pumps) {
@@ -60,7 +64,9 @@ router.get('/', function(req, res, next) {
     },50);
 });
 
-
+/*
+    Based on the pumpname sent in the http request, we clear the volume accumulation record corresponding to it in the in-memory volume accumulation table.
+ */
 router.post('/pumps/volClear',function(req,res,next){
     pumpTable.findAll({where: {pump_name:req.body.pump_name}})
         .then(function(pumps){
@@ -73,7 +79,9 @@ router.post('/pumps/volClear',function(req,res,next){
         });
 });
 
-
+/*
+    Find the pumpName whose rate we want to change, then update the volume accumulation table accordingly, while also sending the command to the serialport so that the pump driver can change the rate.
+ */
 router.post('/pumps/updateRate',function(req,res,next){
     var pumpName = req.body.pumpName;
     var rate = parseFloat(req.body.rate).toFixed(3);
@@ -91,16 +99,15 @@ router.post('/pumps/updateRate',function(req,res,next){
                     currVolAccumulation[pump.pump_name]["curRate"] = rate;
                 }
                 serialBus.write(output);
-
-                output = pump.driver_code + "RAT" + "\r";
-                setTimeout(function(){serialBus.write(output)},10000);
                 res.end();
             }
         })
 });
 
+/*
+    Send the run command for the pump specified in the request by pumpname. Also, update the db record to reflect the pumps running status, as well as the curVolume accumulation table.
+ */
 router.post('/pumps/run/:name',function(req,res,next){
-    //need to decide how to tell it what speed 
     var pumpName = req.params.name;
     var rate;
     pumpTable.findAll({where: {pump_name: pumpName}})
@@ -118,6 +125,9 @@ router.post('/pumps/run/:name',function(req,res,next){
         })
 })
 
+/*
+    Send the stop command for the pump specified in the request by pumpName. Also, update the db record to reflect the pumps running status, as well as the curVolume accumulation table
+ */
 router.post('/pumps/stop/:name',function(req,res,next){
     var pumpName = req.params.name;
     pumpTable.findAll({where: {pump_name: pumpName}})
@@ -134,6 +144,9 @@ router.post('/pumps/stop/:name',function(req,res,next){
         })
 })
 
+/*
+    Fetch the pumpModeRates that correspond to a given runmode
+ */
 router.get('/modes/get/:name',function(req,res,next){
     var modeName = req.params.name;
     var response = new Array();
@@ -149,7 +162,9 @@ router.get('/modes/get/:name',function(req,res,next){
         });
 })
 
-
+/*
+    Add a new runmode along with the corresponding pumpmoderate
+ */
 router.post('/modes/add',function(req,res,next){
     var payLoad = req.body;
     var modeName = payLoad["mode_name"];
@@ -168,6 +183,9 @@ router.post('/modes/add',function(req,res,next){
 
 });
 
+/*
+    Delete a run mode (When a runmode record is deleted, so are its corresponding pumpmodeRate records).
+ */
 router.post('/modes/delete',function(req,res,next){
     var modeName = req.body["mode_name"];
     modeTable.destroy({
@@ -178,6 +196,9 @@ router.post('/modes/delete',function(req,res,next){
     res.end();
 });
 
+/*
+    Add a pump record
+ */
 router.post('/pumps/add',function(req,res,next){
     pumpTable.create({pump_name: req.body.pump_name, driver_code: req.body.driver_code, syringe_diam:req.body.syringe_diam,default_rate: req.body.default_rate})
         .then(function(pump) {
@@ -186,6 +207,9 @@ router.post('/pumps/add',function(req,res,next){
         });
 });
 
+/*
+    delete a pump record
+ */
 router.post('/pumps/delete',function(req,res,next){
     pumpTable.destroy({
         where:{
