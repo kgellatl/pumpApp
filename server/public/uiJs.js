@@ -47,6 +47,9 @@ $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
     <!--   toggle switch action code goes here -->
     var pumpName = this.name;
     if ($(this).bootstrapSwitch('state')) {
+        $('#pauseResume').text('Pause All');
+        $('#pauseResume').removeClass('green');
+        $('#pauseResume').addClass('red');
         $.post('pumps/run/' + pumpName);
     } else {
         $.post('pumps/stop/' + pumpName);
