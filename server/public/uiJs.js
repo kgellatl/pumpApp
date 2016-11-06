@@ -14,7 +14,7 @@ $('#switchCellPump').click(function(){
 socket.on('accVolReading', function (data) {
     var pumpName = data.pumpName;
     var accVol = data.accVol;
-    $('#' + pumpName + 'accVol').val(accVol);
+    $("[id='" + pumpName + "accVol']").val(accVol);
 });
 
 /*
