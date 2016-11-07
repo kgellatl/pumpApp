@@ -38,6 +38,11 @@ File Contents:
     -./packages.json
         File that is interpereted by the npm process (node package manager). There are "scripts" within this file, that are aliases to commands that should be run against the node process to start the application.
 
+Debug Mode:
+    In order to debug, we must use node-inspector. Node-inspector is already installed on the pi as a globally accessible command. Open up a terminal and run the following command: sudo node-insepctor. In another terminal cd into the directory that the app is installed in and run the following
+    command: npm run debug. You should now be able to open your browser to the following: <ipOfPi>:8080/debug?port=5858. You should now have access to the server-side files and can set break points where you like. Note: I have run into some typeError issues from time to time that cause the application 
+    to crash. In the future, a move to the latest node should be considered, as it has a built-in debugger functionality that might be more robust. 
+    
 Usage:
     In order to use the application in regular end user mode one must simply input the following on the command line: npm run start. In order to start the application in admin mode, where an end user can administrate over
     pumps and run modes, one must enter the following on the command line: npm run admin
