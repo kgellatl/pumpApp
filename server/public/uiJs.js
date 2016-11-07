@@ -69,25 +69,23 @@ $('.rateChange').on('keypress', function (e) {
 });
 
 /*
-    When a runmode is selected: first, set all the pumps to stopped, then, get all the rates for said run mode, then, update the rate for each pump, and finally make sure to switch the pump to on. It is important to
-    wait in between sending the rate change command for a pump and telling it to run.
+ When a runmode is selected: first, set all the pumps to stopped, then, get all the rates for said run mode, then, update the rate for each pump, and finally make sure to switch the pump to on. It is important to
+ wait in between sending the rate change command for a pump and telling it to run.
  */
 $('.radio').find("input").on('change', function() {
     if(this.checked) {
         $('.BSswitch ').bootstrapSwitch('state', false, false);
         var groupName = this.value;
-        setTimeout(function() {
-            $.get('modes/get/' + groupName, function (data) {
-                data.forEach(function (element) {
-                    $.post("pumps/updateRate", {pumpName: element.pumpName, rate: element.rate}).done(function (data) {
-                        setTimeout(function() {
-                            $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
-                            $('#' + element.pumpName + 'Rate').val(element.rate);
-                        },3000);
-                    });
-                })
+        $.get('modes/get/' + groupName, function (data) {
+            data.forEach(function (element) {
+                $.post("pumps/updateRate", {pumpName: element.pumpName, rate: element.rate}).done(function (data) {
+                    setTimeout(function() {
+                        $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
+                        $('#' + element.pumpName + 'Rate').val(element.rate);
+                    },3000);
+                });
             })
-        },3000);
+        })
     }
 });
 

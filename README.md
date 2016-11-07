@@ -19,7 +19,7 @@ File Contents:
         endpoints to start and stop pumps, these endpoints in turn delegate to the serialBus object which handles direct communication with the pump drivers via the raspberry pi serial port.
 
     -./server/serialBus.js
-        This file is used to communicate directly with the pump drivers via the serialport. This file is also used to setup, a pipeline for recieving messages from the pi and sending them directly to the client via an open tcp socket, provided by socket.io library.
+        This file is used to communicate directly with the pump drivers via the serialport. It is also used to setup a pipeline for recieving messages from the pi and sending them directly to the client via an open tcp socket, provided by socket.io library.
 
     -./server/views/index.jade
         This file is served via the index.js file on the "/" route (home page). The file is a jade file which provides an html templating syntax, based upon data that is exposed to it via the js in index.js.
