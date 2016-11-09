@@ -5,7 +5,7 @@ var raspi = require('raspi-io');
 var five = require('johnny-five');
 var serialPort = require('serialport');
 
-
+var port;
 /*
 Not utilized, but kept around for future, in case there is a reason to query db tables with added functionality.
  */
@@ -18,7 +18,7 @@ var serialBus = {};
 serialBus.initialize = function() {
 
     //init serialPort
-    var port = new serialPort('/dev/ttyUSB0');
+     port = new serialPort('/dev/ttyUSB0');
 
     //initializes library for delegation to low-level rasberry pi io operations
     var board = new five.Board({
