@@ -21,9 +21,5 @@
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.5.1",
     "sqlite3": "3.1.6"
-  },
-  "devDependencies": {
-    "gulp": "3.9.0",
-    "gulp-nodemon": "^2.2.1"
   }
 }

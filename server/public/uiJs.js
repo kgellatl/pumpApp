@@ -1,19 +1,25 @@
+//setup open tcpsocket for constant volume accumulation updates as well as stirrer motor rate changes
 var socket = io.connect('http://192.168.0.102:8090');
 
-
+//initialize pump switches to off
 $('.BSswitch').bootstrapSwitch('state', false);
 
+//when switchCellPump is clicked, toggle the states of the cell pumps
 $('#switchCellPump').click(function(){
     $('.BSswitch[name=cells1]').bootstrapSwitch('toggleState');
     $('.BSswitch[name=cells2]').bootstrapSwitch('toggleState');
 });
 
+//On a volume accumulation reading event, make sure to update the appropriate html element
 socket.on('accVolReading', function (data) {
     var pumpName = data.pumpName;
     var accVol = data.accVol;
-    $('#' + pumpName + 'accVol').val(accVol);
+    $("[id='" + pumpName + "accVol']").val(accVol);
 });
 
+/*
+Whenever the pause/resume button is clicked set the pump switches to off/on respectively
+ */
 $('#pauseResume').click(function () {
 
     if ($(this).text()=='Pause All') {
@@ -34,11 +40,16 @@ $('#pauseResume').click(function () {
 });
 
 
-<!-- pump on/off toggle switch handler -->
+/*
+    When a switch is toggled make sure to send either a run/stop request for that pump to the backedn
+ */
 $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
     <!--   toggle switch action code goes here -->
     var pumpName = this.name;
     if ($(this).bootstrapSwitch('state')) {
+        $('#pauseResume').text('Pause All');
+        $('#pauseResume').removeClass('green');
+        $('#pauseResume').addClass('red');
         $.post('pumps/run/' + pumpName);
     } else {
         $.post('pumps/stop/' + pumpName);
@@ -46,8 +57,9 @@ $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
 
 });
 
-
-<!-- form-control handler -->
+/*
+    When enter is pressed on a rate change input form, make sure to send a request to the backend to update the rate for the pump that that input form corresponds to
+ */
 $('.rateChange').on('keypress', function (e) {
     if (e.which == 13) {   <!-- Enter key -->
         var pumpName = this.name;
@@ -56,23 +68,24 @@ $('.rateChange').on('keypress', function (e) {
     }
 });
 
-//run mode radio buttons handlers
+/*
+ When a runmode is selected: first, set all the pumps to stopped, then, get all the rates for said run mode, then, update the rate for each pump, and finally make sure to switch the pump to on. It is important to
+ wait in between sending the rate change command for a pump and telling it to run.
+ */
 $('.radio').find("input").on('change', function() {
     if(this.checked) {
         $('.BSswitch ').bootstrapSwitch('state', false, false);
         var groupName = this.value;
-        setTimeout(function() {
-            $.get('modes/get/' + groupName, function (data) {
-                data.forEach(function (element) {
-                    $.post("pumps/updateRate", {pumpName: element.pumpName, rate: element.rate}).done(function (data) {
-                        setTimeout(function() {
-                            $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
-                            $('#' + element.pumpName + 'Rate').val(element.rate);
-                        },3000);
-                    });
-                })
+        $.get('modes/get/' + groupName, function (data) {
+            data.forEach(function (element) {
+                $.post("pumps/updateRate", {pumpName: element.pumpName, rate: element.rate}).done(function (data) {
+                    setTimeout(function() {
+                        $('.BSswitch[name=' + element.pumpName + ']').bootstrapSwitch('state', true, false);
+                        $('#' + element.pumpName + 'Rate').val(element.rate);
+                    },3000);
+                });
             })
-        },3000);
+        })
     }
 });
 
@@ -81,10 +94,16 @@ $("#stirrer").slider();
 $("#stirrer").on("slide", function(slideEvt) {
     $("#stirrerSliderVal").text(slideEvt.value);
 });
+/*
+    Send the motorChange event to the backend via the open tcp socket, with the corresponding rate you want it changed to
+ */
 $("#stirrer").on("slideStop", function(slideEvt) {
     socket.emit('motorChange',{rate: slideEvt.value});
 });
 
+/*
+    Send a volume clear request to the backend for the corresponding pump that the volume clear button belongs to
+ */
 $('.volClear').on('click',function(){
     var pumpName = this.name;
     $.post("pumps/volClear",{pump_name: pumpName});
@@ -94,6 +113,9 @@ $('.volClear').on('click',function(){
 
 <!--- Admin Code -->
 
+/*
+When the pump submission button is clicked, gather the data for the pump, then send a request with said data to the backend, so that a record can be created for said pump
+ */
 $('#pumpAdditionForm').submit(function(event){
     event.preventDefault();
     var driverCode = $(this).find('input[name=driverCode]').val()
@@ -103,6 +125,8 @@ $('#pumpAdditionForm').submit(function(event){
     $.post("pumps/add",{pump_name: pumpName, driver_code: driverCode, syringe_diam:syringeDiam,default_rate:defaultRate})
     location.reload();
 });
+
+
 $('.pumpDelete').on('click',function(){
     var pumpName = this.name;
     $.post("pumps/delete",{pump_name: pumpName});
@@ -115,6 +139,9 @@ $('.modeDelete').on('click',function(){
     location.reload();
 });
 
+/*
+    Handle creation of a runmode on the backend, by collecting the pumps and rates that were input in the form for said run mode, then sending that to the server in the request.
+ */
 $('#runModeAdditionForm').submit(function(event){
     event.preventDefault();
     var runModeName = $(this).find('input[name="runModeName"]').val();
