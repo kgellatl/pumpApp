@@ -100,7 +100,7 @@ $("#stirrer").on("slide", function(slideEvt) {
  */
 $("#stirrer").on("slideStop", function(slideEvt) {
     var motorNo = 1;
-    var state = $('.BSswitch[name=cells2]').bootstrapSwitch('state')
+    var state = $('.BSswitch[name=cells]').bootstrapSwitch('state')
     if(state){
         motorNo=2;
     }
