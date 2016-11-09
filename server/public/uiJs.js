@@ -46,7 +46,8 @@ $('#pauseResume').click(function () {
 $('.BSswitch').on('switchChange.bootstrapSwitch', function () {
     <!--   toggle switch action code goes here -->
     var pumpName = this.name;
-    if ($(this).bootstrapSwitch('state')) {
+    var state = $(this).bootstrapSwitch('state')
+    if (state) {
         $('#pauseResume').text('Pause All');
         $('#pauseResume').removeClass('green');
         $('#pauseResume').addClass('red');
@@ -99,7 +100,8 @@ $("#stirrer").on("slide", function(slideEvt) {
  */
 $("#stirrer").on("slideStop", function(slideEvt) {
     var motorNo = 1;
-    if($('.BSswitch[name=cells2]').bootstrapSwitch('state')){
+    var state = $('.BSswitch[name=cells2]').bootstrapSwitch('state')
+    if(state){
         motorNo=2;
     }
     socket.emit('motorChange',{rate: slideEvt.value,motorNo: motorNo});
