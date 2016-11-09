@@ -6,6 +6,11 @@ body {
 a {
   color: #00B7FF;
 }
+.vcenter {
+  display: inline-block;
+  vertical-align: middle;
+  float: none;
+}
 
 #mainHeader {background:mistyrose;}
 #pcHeader {background:ivory;}
