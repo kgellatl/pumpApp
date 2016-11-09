@@ -48,12 +48,13 @@ serialBus.initialize = function() {
                   to volume queries, so the logic was implemented within the application. That being said, this code was kept around in case any there was a use case for
                   writing a query against the pump drivers in the future; this code would handle receiving input from queries to the drivers and would have to distinguish based on the content of the response.
                  */
-                /*
+
                 port.on('data',
                     function (data) {
                         charString = bufferToCharString(data);
+                        charString.forEach(function(string){console.log(string)});
                     });
-                */
+
 
                 //expose the socket on serialBus object so that it can be utilized in other files via serialbus object export
                 serialBus.socket=socket;
