@@ -99,6 +99,9 @@ router.post('/pumps/updateRate',function(req,res,next){
                     currVolAccumulation[pump.pump_name]["curRate"] = rate;
                 }
                 serialBus.write(output);
+                //verify rate update
+                output = pump.driver_code + "RAT" + "\r";
+                serialBus.write(output);
                 res.end();
             }
         })
