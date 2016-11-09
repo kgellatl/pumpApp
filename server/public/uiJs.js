@@ -98,7 +98,11 @@ $("#stirrer").on("slide", function(slideEvt) {
     Send the motorChange event to the backend via the open tcp socket, with the corresponding rate you want it changed to
  */
 $("#stirrer").on("slideStop", function(slideEvt) {
-    socket.emit('motorChange',{rate: slideEvt.value});
+    var motorNo = 1;
+    if($('.BSswitch[name=cells2]').bootstrapSwitch('state')){
+        motorNo=2;
+    }
+    socket.emit('motorChange',{rate: slideEvt.value,motorNo: motorNo});
 });
 
 /*

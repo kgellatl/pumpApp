@@ -32,14 +32,29 @@ serialBus.initialize = function() {
         //Setup api to delegate to pin 1 using pwm. This is for stirrer control
         var motor1 = new five.Motor(1);
 
-        socket.on('connection', function (socket) {
+        var motor2 = new five.Motor(24);
 
+        socket.on('connection', function (socket) {
+                var motorRunning;
                 /*when we recieve an event from the ui for changing the rate of the stirrer motor via tcp socket, we delegate that to our
                  motor object that then handles setting the pwm output on pin 1 of the rasberry pi
                  */
                 socket.on('motorChange', function (data) {
                     var rate = data.rate;
-                    motor1.start(rate);
+                    var motorNo = data.motorNo;
+                    if(motorNo==1) {
+                        if(motorRunning==2){
+                            motor2.start(0);
+                        }
+                        motor1.start(rate);
+                        motorRunning=1;
+                    }else{
+                        if(motorRunning==1){
+                            motor1.start(0);
+                        }
+                        motor2.start(rate);
+                        motorRunning=2;
+                    }
                 })
 
 
