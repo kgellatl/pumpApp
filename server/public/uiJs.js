@@ -5,9 +5,14 @@ var socket = io.connect('http://192.168.0.102:8090');
 $('.BSswitch').bootstrapSwitch('state', false);
 
 //when switchCellPump is clicked, toggle the states of the cell pumps
+var cells1,cells2;
 $('#switchCellPump').click(function(){
-    $('.BSswitch[name=cells1]').bootstrapSwitch('toggleState');
-    $('.BSswitch[name=cells2]').bootstrapSwitch('toggleState');
+    cells1 = (cells1)?cells1:$('.BSswitch[name=cells1]');
+    cells2 = (cells2)?cells2:$('.BSswitch[name=cells2]');
+    if((cells1.prop("checked") || cells2.prop("checked")) &&!(cells1.prop("checked") && cells2.prop("checked"))) {
+        $('.BSswitch[name=cells1]').bootstrapSwitch('toggleState');
+        $('.BSswitch[name=cells2]').bootstrapSwitch('toggleState');
+    }
 });
 
 //On a volume accumulation reading event, make sure to update the appropriate html element
@@ -17,6 +22,7 @@ socket.on('accVolReading', function (data) {
     $("[id='" + pumpName + "accVol']").val(accVol);
 });
 
+var paused;
 /*
 Whenever the pause/resume button is clicked set the pump switches to off/on respectively
  */
@@ -27,7 +33,8 @@ $('#pauseResume').click(function () {
         $(this).text('Resume All');
         $(this).removeClass('red');
         $(this).addClass('green');
-        $('.BSswitch ').bootstrapSwitch('state',false,false);
+        paused = $('.BSswitch:checked');
+        paused.bootstrapSwitch('state',false,false);
     }
 
     else {
@@ -35,7 +42,7 @@ $('#pauseResume').click(function () {
         $(this).text('Pause All');
         $(this).removeClass('green');
         $(this).addClass('red');
-        $('.BSswitch ').bootstrapSwitch('state',true,false);
+        paused.bootstrapSwitch('state',true,false);
     }
 });
 
