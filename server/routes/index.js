@@ -102,10 +102,12 @@ router.post('/pumps/updateRate',function(req,res,next){
                 }
                 serialBus.write(output);
                 //verify rate update
+                /*
                 setTimeout(function(){
                     output = pump.driver_code + "RAT" + "\r";
                     serialBus.write(output);
                 },500);
+                */
                 res.end();
             }
         })
