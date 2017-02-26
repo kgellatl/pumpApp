@@ -22,10 +22,9 @@ pumpTable.findAll().then(function (pumps) {
         currVolAccumulation[pump.pump_name]["curVol"]=0.000;
         var output = pump.driver_code + "ULH " + pump.default_rate + "\r";
         serialBus.write(output);
-        setTimeout(function(){
-            var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
-            serialBus.write(output);
-        },30000);
+        setTimeout("",30000);
+        var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
+        serialBus.write(output);
     })
 });
 
@@ -57,8 +56,7 @@ router.get('/', function(req, res, next) {
                         pumps: pumps,
                         modes: modes,
                         pumpModeRates: pumpModeRates,
-                        displayForAdmin: process.argv.length == 3 ? "" : "display:none",
-                        currVolAccumulation: currVolAccumulation
+                        displayForAdmin: process.argv.length == 3 ? "" : "display:none"
                     });
                 });
             })

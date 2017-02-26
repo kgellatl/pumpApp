@@ -29,13 +29,13 @@ block content
                         td Acc Vol(ul)
                         each pump in pumps
                             td
-                                input(id=pump.pump_name + "accVol",value=currVolAccumulation[pump.pump_name]["curVol"] readonly).form-control
+                                input(id=pump.pump_name + "accVol" readonly).form-control
                                 button(type="button",name=pump.pump_name).volClear Clear Volume
                     tr
                         td
                         each pump in pumps
                             td
-                                input.BSswitch(name=pump.pump_name, type='checkbox',data-off-text='Stopped',data-on-text='Running',data-on-color='success',data-off-color='danger')
+                                input.BSswitch(name=pump.pump_name, type='checkbox',data-off-text='Stopped',data-on-text='Running',data-on-color='success',data-off-color='danger',checked)
                     tr(style=displayForAdmin)
                         td
                         each pump in pumps
@@ -69,7 +69,7 @@ block content
                 span#stirrerCurrentSliderValLabel &nbspMotor speed (rpm):
                     span#stirrerSliderVal 30
         div.col-lg-12#stirrrRowSpace
-
+    
     div.col-lg-3#mainHeader.panel(style=displayForAdmin)
         h4.panel-heading Add Pump
         div.col-lg-12#pcHeader.panel
@@ -106,7 +106,5 @@ block content
                         span Rate(ul/L)
                         input(type='text', name= pump.pump_name + 'Rate')
                 input(type='submit',value='Add new run mode')
-    script(type="text/javascript").
-        window.pumps = !{JSON.stringify(pumps)};
-    script(src="/uiJs.js")
+    script(src="/uiJs.js")  
      

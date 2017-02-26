@@ -2,11 +2,7 @@
 var socket = io.connect('http://192.168.0.102:8090');
 
 //initialize pump switches to off
-window.pumps.forEach(function(pump){
-    var state = (pump.isRunning==1)?true:false;
-    $('.BSswitch[name=' + pump.pump_name + ']').bootstrapSwitch('state', state);
-    });
-
+$('.BSswitch').bootstrapSwitch('state', false);
 
 //when switchCellPump is clicked, toggle the states of the cell pumps
 var cells1,cells2;
