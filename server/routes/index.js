@@ -22,9 +22,13 @@ pumpTable.findAll().then(function (pumps) {
         currVolAccumulation[pump.pump_name]["curVol"]=0.000;
         var output = pump.driver_code + "ULH " + pump.default_rate + "\r";
         serialBus.write(output);
-        setTimeout("",30000);
-        var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
-        serialBus.write(output);
+        syringSettingFunc = function(){
+            var output = pump.driver_code + "MMD " + pump.syringe_diam + "\r";
+            console.log("HEY JAKE, A PUMP IS GETTING ITS SYRINGE SET: " + output);
+            serialBus.write(output);
+        };
+        syringSettingFunc.bind(null,pump);
+        setTimeout(syringSettingFunc,30000);
     })
 });
 
